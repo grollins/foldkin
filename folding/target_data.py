@@ -8,13 +8,4 @@ class TargetData(object):
     def load_data(self):
         return
 
-
-class SimpleTargetData(TargetData):
-    """docstring for SimpleTargetData"""
-    def __init__(self):
-        super(SimpleTargetData, self).__init__()
-
-    def load_data(self):
-        return
-
         

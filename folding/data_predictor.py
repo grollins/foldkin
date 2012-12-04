@@ -5,16 +5,7 @@ class DataPredictor(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def predict_data(self, model):
+    def predict_data(self, model, feature):
         return
 
 
-class SimpleDataPredictor(DataPredictor):
-    """docstring for SimplePredictor"""
-    def __init__(self):
-        super(SimpleDataPredictor, self).__init__()
-
-    def predict_data(self, model):
-        x = model.get_parameter('x')
-        y = (x - 3)**2 + 2
-        return y
