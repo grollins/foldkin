@@ -1,8 +1,7 @@
 from folding.scipy_optimizer import ScipyOptimizer
 import folding.linear_model as lm
-import numpy
 import nose.tools
-import types
+from types import FloatType
 
 EPSILON = 1e-3
 
@@ -25,7 +24,7 @@ class TestLinearFit(object):
                              initial_parameters, judge,
                              data_predictor, target_data)
         error_message = "Expected float, got %s %s" % (type(score), score)
-        nose.tools.ok_(type(score) is types.FloatType, error_message)
+        nose.tools.ok_(type(score) is FloatType, error_message)
         error_message = "Expected ParameterSet, got %s" % new_params
         nose.tools.ok_(type(new_params) is type(initial_parameters),
                        error_message)

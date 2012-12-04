@@ -1,5 +1,5 @@
 from model_factory import ModelFactory
-from boop.msm import State, Route, MarkovStateModel
+from markov_state_model import State, Route, MarkovStateModel
 import numpy
 import scipy.misc
 
@@ -193,6 +193,12 @@ class CoopModel(MarkovStateModel):
     def __init__(self, state_enumerator, route_mapper, param_dict, noisy=False):
         super(CoopModel, self).__init__(state_enumerator, route_mapper,
                                            param_dict, noisy)
+
+    def get_num_states(self):
+        return len(self.states)
+
+    def get_num_routes(self):
+        return len(self.routes)
 
     def compute_state_energies(self):
         state_energy_list = []

@@ -11,7 +11,7 @@ class SimpleModelFactory(ModelFactory):
         return SimpleModel(parameter_set)
 
 
-class SimpleModel(object):
+class SimpleModel(Model):
     def __init__(self, parameter_set):
         self.parameter_set = parameter_set
 
