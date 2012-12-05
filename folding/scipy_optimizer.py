@@ -5,7 +5,7 @@ class ScipyOptimizer(ParameterOptimizer):
     """docstring for ScipyOptimizer"""
     def __init__(self):
         super(ScipyOptimizer, self).__init__()
-        self.optimization_fcn = scipy.optimize.fmin_powell
+        self.optimization_fcn = scipy.optimize.fmin_bfgs
 
     def optimize_parameters(self, model_factory, parameter_set,
                              judge, data_predictor, target_data):

@@ -41,7 +41,8 @@ class CoopModelFactory(ModelFactory):
 
     def kf_factory(self, C):
         N = self.parameter_set.get_parameter('N')
-        k1 = self.parameter_set.get_parameter('k1')
+        log_k1 = self.parameter_set.get_parameter('log_k1')
+        k1 = 10**log_k1
         def kf_fcn(t):
             S = N - C
             kf = S * k1
@@ -61,9 +62,12 @@ class CoopModelFactory(ModelFactory):
 
     def route_mapper_factory(self):
         N = self.parameter_set.get_parameter('N')
-        K = self.parameter_set.get_parameter('K')
-        alpha = self.parameter_set.get_parameter('alpha')
-        epsilon = self.parameter_set.get_parameter('epsilon')
+        log_K = self.parameter_set.get_parameter('log_K')
+        log_alpha = self.parameter_set.get_parameter('log_alpha')
+        log_epsilon = self.parameter_set.get_parameter('log_epsilon')
+        K = 10**log_K
+        alpha = 10**log_alpha
+        epsilon = 10**log_epsilon
         folded_weight = epsilon
 
         def map_routes(states):
@@ -154,9 +158,12 @@ class CoopModel(MarkovStateModel):
 
     def compute_boltzmann_factors(self):
         N = self.get_parameter('N')
-        K = self.get_parameter('K')
-        alpha = self.get_parameter('alpha')
-        epsilon = self.get_parameter('epsilon')
+        log_K = self.get_parameter('log_K')
+        log_alpha = self.get_parameter('log_alpha')
+        log_epsilon = self.get_parameter('log_epsilon')
+        K = 10**log_K
+        alpha = 10**log_alpha
+        epsilon = 10**log_epsilon
         folded_weight = epsilon
         boltzmann_factor_list = []
         for this_state in self.states:
