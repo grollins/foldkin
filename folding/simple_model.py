@@ -1,9 +1,10 @@
 import numpy
-from folding.model_factory import ModelFactory
-from folding.data_predictor import DataPredictor
-from folding.target_data import TargetData
-from folding.parameter_set import ParameterSet
-from folding.judge import Judge
+from model_factory import ModelFactory
+from model import Model
+from data_predictor import DataPredictor
+from target_data import TargetData
+from parameter_set import ParameterSet
+from judge import Judge
 
 class SimpleModelFactory(ModelFactory):
     """SimpleModelFactory creates a SimpleModel."""
@@ -36,6 +37,12 @@ class SimpleTargetData(TargetData):
         super(SimpleTargetData, self).__init__()
 
     def load_data(self):
+        return
+
+    def get_feature(self):
+        return
+
+    def get_target(self):
         return
 
 
@@ -72,4 +79,4 @@ class SimpleJudge(Judge):
 
     def judge_prediction(self, model, data_predictor, target_data):
         prediction = data_predictor.predict_data(model, None)
-        return prediction
+        return prediction, prediction

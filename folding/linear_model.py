@@ -85,4 +85,4 @@ class LinearJudge(Judge):
         feature = target_data.get_feature()
         target = target_data.get_target()
         prediction = data_predictor.predict_data(model, feature)
-        return mean_squared_error(target, prediction)
+        return mean_squared_error(target, prediction), prediction

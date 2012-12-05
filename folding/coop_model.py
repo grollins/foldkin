@@ -113,61 +113,14 @@ class CoopState(State):
     def __str__(self):
         return "%s %d %s %s %s" % (self.id, self.C, self.is_folded_state,
                                    self.is_unfolded_state, self.is_first_excited_state)
-    def compute_energy(self, N, g, g2, epsilon):
-        # S = N - self.C
-        # energy = S * g
-        energy = self.C * g
-
-        # if self.C < 2:
-        #     exponent = 0
-        # elif self.C == 2:
-        #     exponent = 1
-        # elif self.C == 3:
-        #     exponent = 3
-        # elif self.C > 3:
-        #     exponent = 2 * (self.C - 2) + 1
-
-        if self.C < 2:
-            exponent = 0
-        elif self.C == 2:
-            exponent = 1
-        elif self.C == 3:
-            exponent = 3
-        elif self.C == 4:
-            exponent = 6
-        elif self.C == 5:
-            exponent = 10
-        elif self.C == 6:
-            exponent = 14
-        elif self.C > 6:
-            exponent = 14 + 4 * (self.C - 6)
-
-        energy += exponent * g2
-        if self.is_folded_state:
-            energy += epsilon
-        self.energy = energy
-        return self.energy
 
     def compute_boltz_weight(self, N, K, alpha, folded_weight):
-        # this_S = N - self.C
         if self.is_unfolded_state:
             this_bf = n_choose_k(N, self.C) * K**self.C
-            # this_bf = boop.util.n_choose_k(N, this_S) * K**this_S
         elif self.is_folded_state:
             this_bf = n_choose_k(N, self.C) * K**self.C * folded_weight
-            # this_bf = boop.util.n_choose_k(N, this_S) * K**this_S * folded_weight
         else:
             this_bf = n_choose_k(N, self.C) * K**self.C
-            # this_bf = boop.util.n_choose_k(N, this_S) * K**this_S
-
-        # if self.C < 2:
-        #     exponent = 0
-        # elif self.C == 2:
-        #     exponent = 1
-        # elif self.C == 3:
-        #     exponent = 3
-        # elif self.C > 3:
-        #     exponent = 2 * (self.C - 2) + 1
 
         if self.C < 2:
             exponent = 0
@@ -186,13 +139,12 @@ class CoopState(State):
 
         this_alpha = alpha ** exponent
         this_bf *= this_alpha
-        # print this_C, boop.util.n_choose_k(N, this_S), K**this_S, this_alpha
         return this_bf
 
 class CoopModel(MarkovStateModel):
-    def __init__(self, state_enumerator, route_mapper, param_dict, noisy=False):
+    def __init__(self, state_enumerator, route_mapper, parameter_set, noisy=False):
         super(CoopModel, self).__init__(state_enumerator, route_mapper,
-                                           param_dict, noisy)
+                                           parameter_set, noisy)
 
     def get_num_states(self):
         return len(self.states)
@@ -200,25 +152,12 @@ class CoopModel(MarkovStateModel):
     def get_num_routes(self):
         return len(self.routes)
 
-    def compute_state_energies(self):
-        state_energy_list = []
-        N = self.param_dict['N']
-        g = self.param_dict['g']
-        g2 = self.param_dict['g2']
-        epsilon = self.param_dict['epsilon']
-        for s in self.states:
-            this_energy = s.compute_energy(N, g, g2, epsilon)
-            state_energy_list.append(this_energy)
-        self.state_energy_array = numpy.array(state_energy_list)
-        return self.state_energy_array
-
-    def compute_boltzmann_factors(self, beta):
-        N = self.param_dict['N']
-        K = self.param_dict.compute_K(beta)
-        alpha = self.param_dict.compute_alpha(beta)
-        epsilon = self.param_dict['epsilon']
-        # folded_weight = numpy.exp(-epsilon*beta)
-        folded_weight = self.param_dict.compute_folded_weight(beta)
+    def compute_boltzmann_factors(self):
+        N = self.get_parameter('N')
+        K = self.get_parameter('K')
+        alpha = self.get_parameter('alpha')
+        epsilon = self.get_parameter('epsilon')
+        folded_weight = epsilon
         boltzmann_factor_list = []
         for this_state in self.states:
             this_bf = this_state.compute_boltz_weight(N, K, alpha, folded_weight)
