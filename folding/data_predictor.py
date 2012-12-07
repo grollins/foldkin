@@ -25,3 +25,13 @@ class FoldRatePredictor(object):
         P1_eq = boltzmann_factor_array[model.first_excited_index]
         log_kf = log_k1 + numpy.log10(P1_eq / Q_0)
         return numpy.array( [log_kf] )
+
+
+class FoldRateCollectionPredictor(object):
+    """docstring for FoldRateCollectionPredictor"""
+    def __init__(self):
+        super(FoldRateCollectionPredictor, self).__init__()
+        self.single_rate_predictor = FoldRatePredictor()
+
+    def predict_data(self, model, feature):
+        self.single_rate_predictor.predict_data()
