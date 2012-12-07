@@ -5,6 +5,7 @@ from data_predictor import DataPredictor
 from target_data import TargetData
 from parameter_set import ParameterSet
 from judge import Judge
+from prediction import Prediction
 
 class SimpleModelFactory(ModelFactory):
     """SimpleModelFactory creates a SimpleModel."""
@@ -20,15 +21,25 @@ class SimpleModel(Model):
         return self.parameter_set.get_parameter(parameter_name)
 
 
+class SimplePrediction(Prediction):
+    """docstring for SimplePrediction"""
+    def __init__(self, y):
+        super(SimplePrediction, self).__init__()
+        self.y = y
+
+    def as_array(self):
+        return numpy.array([self.y])
+
+
 class SimpleDataPredictor(DataPredictor):
     """docstring for SimplePredictor"""
     def __init__(self):
         super(SimpleDataPredictor, self).__init__()
+        self.prediction_factory = SimplePrediction
 
     def predict_data(self, model, feature):
         x = model.get_parameter('x')
-        y = (x - 3)**2 + 2
-        return y
+        return self.prediction_factory( (x - 3)**2 + 2 )
 
 
 class SimpleTargetData(TargetData):
@@ -85,4 +96,5 @@ class SimpleJudge(Judge):
 
     def judge_prediction(self, model, data_predictor, target_data):
         prediction = data_predictor.predict_data(model, None)
-        return prediction, prediction
+        prediction_array = prediction.as_array()
+        return prediction_array[0], prediction

@@ -31,7 +31,7 @@ class TestFitOneFoldRate(object):
         score, prediction = judge.judge_prediction(optimized_model, data_predictor,
                                                    target_data)
         true_logkf = target_data.get_target()[0]
-        predicted_logkf = prediction[0]
-        print true_logkf, predicted_logkf
-        nose.tools.ok_(abs(true_logkf - predicted_logkf) < EPSILON,
-                       "Expected logkf = %.2f, got %.2f" % (true_logkf, predicted_logkf))
+        delta_logkf = prediction.compute_difference(true_logkf)
+        print true_logkf, delta_logkf
+        nose.tools.ok_(abs(delta_logkf) < EPSILON,
+                       "Expected logkf = %.2f, off by %.2f" % (true_logkf, delta_logkf))

@@ -1,5 +1,6 @@
 import abc
 import numpy
+from prediction import SingleFoldRatePrediction
 
 class DataPredictor(object):
     """DataPredictor is an abstract class"""
@@ -14,6 +15,7 @@ class FoldRatePredictor(object):
     """docstring for FoldRatePredictor"""
     def __init__(self):
         super(FoldRatePredictor, self).__init__()
+        self.prediction_factory = SingleFoldRatePrediction
 
     def predict_data(self, model, feature):
         log_k1 = model.get_parameter('log_k1')
@@ -23,8 +25,8 @@ class FoldRatePredictor(object):
         inds.remove(model.folded_index)
         Q_0 = boltzmann_factor_array[inds].sum()
         P1_eq = boltzmann_factor_array[model.first_excited_index]
-        log_kf = log_k1 + numpy.log10(P1_eq / Q_0)
-        return numpy.array( [log_kf] )
+        log_fold_rate = log_k1 + numpy.log10(P1_eq / Q_0)
+        return self.prediction_factory(log_fold_rate)
 
 
 class FoldRateCollectionPredictor(object):
