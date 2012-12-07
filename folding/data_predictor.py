@@ -16,7 +16,6 @@ class FoldRatePredictor(object):
         super(FoldRatePredictor, self).__init__()
 
     def predict_data(self, model, feature):
-        N = model.get_parameter('N')
         log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         Q = boltzmann_factor_array.sum()

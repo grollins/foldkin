@@ -21,3 +21,10 @@ class ParameterSet(object):
     def update_from_array(self, parameter_array):
         return
 
+    @abc.abstractmethod
+    def set_parameter_bounds(self, parameter_name, min_value, max_value):
+        return
+
+    @abc.abstractmethod
+    def get_parameter_bounds(self):
+        return

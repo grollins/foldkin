@@ -54,6 +54,8 @@ class LinearParameterSet(ParameterSet):
     def __init__(self):
         super(LinearParameterSet, self).__init__()
         self.parameters = {'a':0.0, 'b':0.0}
+        self.bounds_dict = {'a':(None, None),
+                            'b':(None, None)}
 
     def set_parameter(self, parameter_name, parameter_value):
         if self.parameters.has_key(parameter_name):
@@ -74,6 +76,15 @@ class LinearParameterSet(ParameterSet):
         parameter_array = numpy.atleast_1d(parameter_array)
         self.set_parameter('a', parameter_array[0])
         self.set_parameter('b', parameter_array[1])
+
+    def set_parameter_bounds(self, parameter_name, min_value, max_value):
+        self.bounds_dict[parameter_name] = (min_value, max_value)
+
+    def get_parameter_bounds(self):
+        a_bounds = self.bounds_dict['a']
+        b_bounds = self.bounds_dict['b']
+        bounds = [a_bounds, b_bounds]
+        return bounds
 
 
 class LinearJudge(Judge):

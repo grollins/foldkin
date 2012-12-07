@@ -71,6 +71,12 @@ class SimpleParameterSet(ParameterSet):
     def update_from_array(self, parameter_array):
         self.set_parameter('x', numpy.atleast_1d(parameter_array)[0])
 
+    def set_parameter_bounds(self, parameter_name, min_value, max_value):
+        return
+
+    def get_parameter_bounds(self):
+        return [ (None, None) ]
+
 
 class SimpleJudge(Judge):
     """docstring for SimpleJudge"""

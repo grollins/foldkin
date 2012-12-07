@@ -24,6 +24,7 @@ class Route(object):
 class MarkovStateModel(Model):
     def __init__(self, state_enumerator, route_mapper, parameter_set,
                  noisy=False):
+        super(MarkovStateModel, self).__init__()
         self.states = state_enumerator()
         if route_mapper is None:
             self.routes = None
