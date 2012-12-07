@@ -5,7 +5,6 @@ class ParameterOptimizer(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def optimize_parameters(self, model_factory,
-                             parameter_set, judge,
-                             data_predictor, target_data):
+    def optimize_parameters(self, score_fcn, parameter_set):
         return
+
