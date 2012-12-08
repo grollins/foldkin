@@ -1,17 +1,8 @@
-import abc
 import numpy
+import base.data_predictor
 from prediction import SingleFoldRatePrediction
 
-class DataPredictor(object):
-    """DataPredictor is an abstract class"""
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def predict_data(self, model, feature):
-        return
-
-
-class FoldRatePredictor(object):
+class FoldRatePredictor(base.data_predictor.DataPredictor):
     """docstring for FoldRatePredictor"""
     def __init__(self):
         super(FoldRatePredictor, self).__init__()
@@ -29,7 +20,7 @@ class FoldRatePredictor(object):
         return self.prediction_factory(log_fold_rate)
 
 
-class FoldRateCollectionPredictor(object):
+class FoldRateCollectionPredictor(base.data_predictor.DataPredictor):
     """docstring for FoldRateCollectionPredictor"""
     def __init__(self):
         super(FoldRateCollectionPredictor, self).__init__()

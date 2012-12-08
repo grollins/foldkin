@@ -1,13 +1,13 @@
-from model_factory import ModelFactory
-from markov_state_model import State, Route, MarkovStateModel
 import numpy
 import scipy.misc
+import base.model_factory
+from markov_state_model import State, Route, MarkovStateModel
 
 def n_choose_k(n,k):
     assert n > 0, "%d %d" % (n, k)
     return scipy.misc.comb(n, k)
 
-class CoopModelFactory(ModelFactory):
+class CoopModelFactory(base.model_factory.ModelFactory):
     """docstring for CoopModelFactory"""
     def create_model(self, parameter_set):
         self.parameter_set = parameter_set

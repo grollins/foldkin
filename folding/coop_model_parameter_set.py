@@ -1,7 +1,7 @@
-from parameter_set import ParameterSet
 import numpy
+import base.parameter_set
 
-class CoopModelParameterSet(ParameterSet):
+class CoopModelParameterSet(base.parameter_set.ParameterSet):
     """docstring for CoopModelParameterSet"""
     def __init__(self):
         super(CoopModelParameterSet, self).__init__()

@@ -1,5 +1,4 @@
 import abc
-import numpy
 
 class ParameterSet(object):
     """ParameterSet is an abstract class."""

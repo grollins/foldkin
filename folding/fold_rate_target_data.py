@@ -1,26 +1,9 @@
-import abc
-import pandas
 import os
+import pandas
 import numpy
+import base.target_data
 
-class TargetData(object):
-    """docstring for TargetData"""
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def load_data(self):
-        return
-
-    @abc.abstractmethod
-    def get_feature(self):
-        return
-
-    @abc.abstractmethod
-    def get_target(self):
-        return
-
-
-class SingleFoldRateTargetData(TargetData):
+class SingleFoldRateTargetData(base.target_data.TargetData):
     """SingleFoldRateTargetData reads from a table that looks like this:
     N,L,aco,rco,logkf,name
     3,73,12.96,0.18,5.516,a3D
@@ -48,7 +31,7 @@ class SingleFoldRateTargetData(TargetData):
         return numpy.array([self.exp_rate])
 
 
-class FoldRateCollectionTargetData(TargetData):
+class FoldRateCollectionTargetData(base.target_data.TargetData):
     """FoldRateCollectionTargetData reads from a table that looks like this:
     N,L,aco,rco,logkf,name
     3,73,12.96,0.18,5.516,a3D

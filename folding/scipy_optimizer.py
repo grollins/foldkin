@@ -1,7 +1,7 @@
-from parameter_optimizer import ParameterOptimizer
 import scipy.optimize
+import base.parameter_optimizer
 
-class ScipyOptimizer(ParameterOptimizer):
+class ScipyOptimizer(base.parameter_optimizer.ParameterOptimizer):
     """docstring for ScipyOptimizer"""
     def __init__(self):
         super(ScipyOptimizer, self).__init__()

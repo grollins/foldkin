@@ -1,16 +1,7 @@
-import abc
 import numpy
+import base.prediction
 
-class Prediction(object):
-    """Prediction is an abstract class."""
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def as_array(self):
-        return
-
-
-class SingleFoldRatePrediction(Prediction):
+class SingleFoldRatePrediction(base.prediction.Prediction):
     """docstring for SingleFoldRatePrediction"""
     def __init__(self, log_fold_rate):
         super(SingleFoldRatePrediction, self).__init__()

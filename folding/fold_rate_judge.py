@@ -1,16 +1,7 @@
-import abc
+import base.judge
 from sklearn.metrics import mean_squared_error
 
-class Judge(object):
-    """docstring for Judge"""
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def judge_prediction(self, model, data_predictor, target_data):
-        return
-
-
-class FoldRateJudge(Judge):
+class FoldRateJudge(base.judge.Judge):
     """docstring for FoldRateJudge"""
     def __init__(self):
         super(FoldRateJudge, self).__init__()
