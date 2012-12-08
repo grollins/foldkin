@@ -30,6 +30,8 @@ class SingleFoldRateTargetData(base.target_data.TargetData):
     def get_target(self):
         return numpy.array([self.exp_rate])
 
+    def get_notes(self):
+        return []
 
 class FoldRateCollectionTargetData(base.target_data.TargetData):
     """FoldRateCollectionTargetData reads from a table that looks like this:
@@ -56,6 +58,8 @@ class FoldRateCollectionTargetData(base.target_data.TargetData):
         data_table = pandas.read_csv(data_file, index_col=5, header=0)
         self.feature = data_table[feature]
         self.exp_rate = data_table['logkf']
+        self.names = data_table.index.tolist()
+        self.folds = data_table['fold']
         return
 
     def get_feature(self):
@@ -63,4 +67,6 @@ class FoldRateCollectionTargetData(base.target_data.TargetData):
 
     def get_target(self):
         return numpy.array(self.exp_rate)
- 
+
+    def get_notes(self):
+        return [self.names, self.folds]

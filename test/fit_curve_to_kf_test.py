@@ -1,7 +1,8 @@
 import nose.tools
 from folding.scipy_optimizer import ScipyOptimizer
 import folding.curve_fit_one_feature_model as curve
-from folding.target_data import FoldRateCollectionTargetData
+from folding.fold_rate_target_data import FoldRateCollectionTargetData
+from folding.file_archiver import FileArchiver
 
 EPSILON = 0.1
 
@@ -42,3 +43,5 @@ class TestFitCurveToCollectionOfFoldRates(object):
         optimized_model = model_factory.create_model(new_params)
         score, prediction = judge.judge_prediction(optimized_model, data_predictor,
                                                    target_data)
+        archiver = FileArchiver()
+        archiver.save_results(target_data, prediction, "test_results.txt")
