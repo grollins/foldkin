@@ -23,6 +23,8 @@ class SingleFoldRateTargetData(base.target_data.TargetData):
         data_table = pandas.read_csv(data_file, index_col=5, header=0)
         self.num_ss = data_table.get_value(protein_name, 'N')
         self.exp_rate = data_table.get_value(protein_name, 'logkf')
+        self.name = protein_name
+        self.fold = data_table.get_value(protein_name, 'fold')
 
     def get_feature(self):
         return numpy.array([self.num_ss])
@@ -31,7 +33,7 @@ class SingleFoldRateTargetData(base.target_data.TargetData):
         return numpy.array([self.exp_rate])
 
     def get_notes(self):
-        return []
+        return [(self.name,), (self.fold,)]
 
 class FoldRateCollectionTargetData(base.target_data.TargetData):
     """FoldRateCollectionTargetData reads from a table that looks like this:

@@ -2,9 +2,10 @@ import nose.tools
 from folding.scipy_optimizer import ScipyOptimizer
 from folding.coop_model import CoopModelFactory
 from folding.coop_model_parameter_set import CoopModelParameterSet
-from folding.judge import FoldRateJudge
-from folding.data_predictor import FoldRatePredictor
-from folding.target_data import SingleFoldRateTargetData
+from folding.fold_rate_judge import FoldRateJudge
+from folding.fold_rate_predictor import SingleFoldRatePredictor
+from folding.fold_rate_target_data import SingleFoldRateTargetData
+from folding.file_archiver import FileArchiver
 
 EPSILON = 0.1
 
@@ -31,7 +32,7 @@ class TestFitOneFoldRate(object):
         initial_parameters.set_parameter('N', 3)
         initial_parameters.set_parameter_bounds('log_k1', 5.5, 5.7)
         judge = FoldRateJudge()
-        data_predictor = FoldRatePredictor()
+        data_predictor = SingleFoldRatePredictor()
         target_data = SingleFoldRateTargetData()
         target_data.load_data('a3D')
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
@@ -46,3 +47,6 @@ class TestFitOneFoldRate(object):
         print true_logkf, delta_logkf
         nose.tools.ok_(abs(delta_logkf) < EPSILON,
                        "Expected logkf = %.2f, off by %.2f" % (true_logkf, delta_logkf))
+
+        archiver = FileArchiver()
+        archiver.save_results(target_data, prediction, "test/output/test_one_markov_results.txt")

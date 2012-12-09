@@ -1,11 +1,11 @@
 import numpy
 import base.data_predictor
-from prediction import SingleFoldRatePrediction
+from fold_rate_prediction import SingleFoldRatePrediction, FoldRateCollectionPrediction
 
-class FoldRatePredictor(base.data_predictor.DataPredictor):
+class SingleFoldRatePredictor(base.data_predictor.DataPredictor):
     """docstring for FoldRatePredictor"""
     def __init__(self):
-        super(FoldRatePredictor, self).__init__()
+        super(SingleFoldRatePredictor, self).__init__()
         self.prediction_factory = SingleFoldRatePrediction
 
     def predict_data(self, model, feature):
@@ -24,7 +24,15 @@ class FoldRateCollectionPredictor(base.data_predictor.DataPredictor):
     """docstring for FoldRateCollectionPredictor"""
     def __init__(self):
         super(FoldRateCollectionPredictor, self).__init__()
-        self.single_rate_predictor = FoldRatePredictor()
+        self.single_rate_predictor = SingleFoldRatePredictor()
+        self.prediction_factory = FoldRateCollectionPrediction
 
     def predict_data(self, model, feature):
-        self.single_rate_predictor.predict_data()
+        prediction_collection = self.prediction_factory()
+        for this_value in feature:
+            fold_rate_model = model.get_element(this_value)
+            if fold_rate_model:
+                element_prediction = self.single_rate_predictor.predict_data(fold_rate_model,
+                                                        numpy.array(this_value))
+                prediction_collection.add_prediction(element_prediction)
+        return prediction_collection

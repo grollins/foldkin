@@ -9,6 +9,9 @@ def n_choose_k(n,k):
 
 class CoopModelFactory(base.model_factory.ModelFactory):
     """docstring for CoopModelFactory"""
+    def __init__(self):
+        super(CoopModelFactory, self).__init__()
+
     def create_model(self, parameter_set):
         self.parameter_set = parameter_set
         state_enumerator = self.state_enumerator_factory()

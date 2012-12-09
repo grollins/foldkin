@@ -39,9 +39,12 @@ class TestFitCurveToCollectionOfFoldRates(object):
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
-        new_params, score = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score = optimizer.optimize_parameters(score_fcn,
+                                                          initial_parameters)
         optimized_model = model_factory.create_model(new_params)
-        score, prediction = judge.judge_prediction(optimized_model, data_predictor,
+        score, prediction = judge.judge_prediction(optimized_model, 
+                                                   data_predictor,
                                                    target_data)
         archiver = FileArchiver()
-        archiver.save_results(target_data, prediction, "test_results.txt")
+        archiver.save_results(target_data, prediction,
+                              "test/output/test_fit_curve_results.txt")
