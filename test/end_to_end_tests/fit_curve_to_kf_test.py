@@ -3,6 +3,8 @@ from folding.scipy_optimizer import ScipyOptimizer
 import folding.curve_fit_one_feature_model as curve
 from folding.fold_rate_target_data import FoldRateCollectionTargetData
 from folding.file_archiver import FileArchiver
+from folding.bootstrap_selector import BootstrapSelector
+from folding.parameter_set_distribution import ParameterSetDistribution
 
 EPSILON = 0.1
 
@@ -36,15 +38,37 @@ class TestFitCurveToCollectionOfFoldRates(object):
         data_predictor = curve.CurveFitOneFeatureDataPredictor()
         target_data = FoldRateCollectionTargetData()
         target_data.load_data('aco')
+        bs_selector = BootstrapSelector()
+        optimizer = ScipyOptimizer()
+        param_dist = ParameterSetDistribution()
+
+        # bootstrapped data
+        for i in xrange(10):
+            resampled_target_data = bs_selector.select_data(target_data)
+            score_fcn = self.make_score_fcn(model_factory, initial_parameters,
+                                            judge, data_predictor,
+                                            resampled_target_data)
+            new_params, score = optimizer.optimize_parameters(score_fcn,
+                                                              initial_parameters)
+            param_dist.add_parameter_set(new_params, score)
+
+        # all data
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
-        optimizer = ScipyOptimizer()
         new_params, score = optimizer.optimize_parameters(score_fcn,
                                                           initial_parameters)
+
+        # compute prediction from optimized params
         optimized_model = model_factory.create_model(new_params)
         score, prediction = judge.judge_prediction(optimized_model, 
                                                    data_predictor,
-                                                   target_data)
+                                                   resampled_target_data)
         archiver = FileArchiver()
         archiver.save_results(target_data, prediction,
                               "test/output/test_fit_curve_results.txt")
+
+        param_dist.save_to_file("test/output/parameter_distribution_from_curve_fit.pkl")
+        reloaded_param_dist = ParameterSetDistribution()
+        reloaded_param_dist.load_from_file("test/output/parameter_distribution_from_curve_fit.pkl")
+        nose.tools.eq_(param_dist, reloaded_param_dist,
+                       "Reloaded parameter distribution doesn't match.")

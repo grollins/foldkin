@@ -16,6 +16,10 @@ class CoopModelParameterSet(base.parameter_set.ParameterSet):
         my_array = self.as_array()
         return "%s" % (my_array)
 
+    def __iter__(self):
+        for param_name, param_value in self.parameter_dict.iteritems():
+            yield param_name, param_value
+
     def set_parameter(self, param_name, param_value):
         self.parameter_dict[param_name] = param_value
 

@@ -65,7 +65,7 @@ class CurveFitOneFeatureParameterSet(ParameterSet):
     """CurveFitOneFeatureParameterSet has two parameters, a and b."""
     def __init__(self):
         super(CurveFitOneFeatureParameterSet, self).__init__()
-        self.parameters = {'a':0.0, 'b':1.0, 'c':0.0}
+        self.parameter_dict = {'a':0.0, 'b':1.0, 'c':0.0}
         self.bounds_dict = {'a':(None, None),
                             'b':(None, None),
                             'c':(None, None),}
@@ -74,20 +74,24 @@ class CurveFitOneFeatureParameterSet(ParameterSet):
         my_array = self.as_array()
         return "%s" % (my_array)
 
+    def __iter__(self):
+        for param_name, param_value in self.parameter_dict.iteritems():
+            yield param_name, param_value
+
     def set_parameter(self, parameter_name, parameter_value):
-        if self.parameters.has_key(parameter_name):
-            self.parameters[parameter_name] = parameter_value
+        if self.parameter_dict.has_key(parameter_name):
+            self.parameter_dict[parameter_name] = parameter_value
         else:
             print "Unexpected parameter", parameter_name
 
     def get_parameter(self, parameter_name):
-        return self.parameters[parameter_name]
+        return self.parameter_dict[parameter_name]
 
     def as_array(self):
         """Array format: [a, b, c]"""
-        a = self.parameters['a']
-        b = self.parameters['b']
-        c = self.parameters['c']
+        a = self.parameter_dict['a']
+        b = self.parameter_dict['b']
+        c = self.parameter_dict['c']
         return numpy.array([a, b, c])
 
     def update_from_array(self, parameter_array):
