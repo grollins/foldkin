@@ -5,5 +5,5 @@ class DataSelector(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def sample_data(self, data_set):
+    def select_data(self, target_data):
         return
