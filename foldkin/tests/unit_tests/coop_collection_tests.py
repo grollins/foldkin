@@ -1,8 +1,8 @@
 import numpy
 import nose.tools
-from folding.coop_model_parameter_set import CoopModelParameterSet
-from folding.coop_collection import CoopCollectionFactory
-from folding.fold_rate_predictor import FoldRateCollectionPredictor
+from foldkin.coop_model_parameter_set import CoopModelParameterSet
+from foldkin.coop_collection import CoopCollectionFactory
+from foldkin.fold_rate_predictor import FoldRateCollectionPredictor
 
 epsilon = 0.1
 

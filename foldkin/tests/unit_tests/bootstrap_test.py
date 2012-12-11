@@ -1,6 +1,6 @@
 import nose.tools
-from folding.fold_rate_target_data import FoldRateCollectionTargetData
-from folding.bootstrap_selector import BootstrapSelector
+from foldkin.fold_rate_target_data import FoldRateCollectionTargetData
+from foldkin.bootstrap_selector import BootstrapSelector
 
 @nose.tools.istest
 def resampled_target_data_same_size_as_original_target_data():

@@ -1,20 +1,14 @@
+import base
 import numpy
 from sklearn.metrics import mean_squared_error
-from model_factory import ModelFactory
-from model import Model
-from data_predictor import DataPredictor
-from target_data import TargetData
-from parameter_set import ParameterSet
-from judge import Judge
-from prediction import Prediction
 
-class CurveFitOneFeatureModelFactory(ModelFactory):
+class CurveFitOneFeatureModelFactory(base.model_factory.ModelFactory):
     """CurveFitOneFeatureModelFactory creates a CurveFitOneFeatureModel."""
     def create_model(self, parameter_set):
         return CurveFitOneFeatureModel(parameter_set)
 
 
-class CurveFitOneFeatureModel(Model):
+class CurveFitOneFeatureModel(base.model.Model):
     def __init__(self, parameter_set):
         self.parameter_set = parameter_set
 
@@ -22,7 +16,7 @@ class CurveFitOneFeatureModel(Model):
         return self.parameter_set.get_parameter(parameter_name)
 
 
-class CurveFitOneFeaturePrediction(Prediction):
+class CurveFitOneFeaturePrediction(base.prediction.Prediction):
     """docstring for CurveFitOneFeaturePrediction"""
     def __init__(self, y_array):
         super(CurveFitOneFeaturePrediction, self).__init__()
@@ -32,7 +26,7 @@ class CurveFitOneFeaturePrediction(Prediction):
         return self.y_array
 
 
-class CurveFitOneFeatureDataPredictor(DataPredictor):
+class CurveFitOneFeatureDataPredictor(base.data_predictor.DataPredictor):
     """docstring for CurveFitOneFeaturePredictor"""
     def __init__(self):
         super(CurveFitOneFeatureDataPredictor, self).__init__()
@@ -45,7 +39,7 @@ class CurveFitOneFeatureDataPredictor(DataPredictor):
         return self.prediction_factory(a * feature_array**b + c)
 
 
-class CurveFitOneFeatureTargetData(TargetData):
+class CurveFitOneFeatureTargetData(base.target_data.TargetData):
     """docstring for CurveFitOneFeatureTargetData"""
     def __init__(self):
         super(CurveFitOneFeatureTargetData, self).__init__()
@@ -60,8 +54,11 @@ class CurveFitOneFeatureTargetData(TargetData):
     def get_target(self):
         return self.target
 
+    def get_notes(self):
+        return []
 
-class CurveFitOneFeatureParameterSet(ParameterSet):
+
+class CurveFitOneFeatureParameterSet(base.parameter_set.ParameterSet):
     """CurveFitOneFeatureParameterSet has two parameters, a and b."""
     def __init__(self):
         super(CurveFitOneFeatureParameterSet, self).__init__()
@@ -111,7 +108,7 @@ class CurveFitOneFeatureParameterSet(ParameterSet):
         return bounds
 
 
-class CurveFitOneFeatureJudge(Judge):
+class CurveFitOneFeatureJudge(base.judge.Judge):
     """docstring for CurveFitOneFeatureJudge"""
     def __init__(self):
         super(CurveFitOneFeatureJudge, self).__init__()

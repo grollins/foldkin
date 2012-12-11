@@ -1,10 +1,10 @@
 import nose.tools
-from folding.scipy_optimizer import ScipyOptimizer
-import folding.curve_fit_one_feature_model as curve
-from folding.fold_rate_target_data import FoldRateCollectionTargetData
-from folding.file_archiver import FileArchiver
-from folding.bootstrap_selector import BootstrapSelector
-from folding.parameter_set_distribution import ParameterSetDistribution
+from foldkin.scipy_optimizer import ScipyOptimizer
+import foldkin.curve_fit_one_feature_model as curve
+from foldkin.fold_rate_target_data import FoldRateCollectionTargetData
+from foldkin.file_archiver import FileArchiver
+from foldkin.bootstrap_selector import BootstrapSelector
+from foldkin.parameter_set_distribution import ParameterSetDistribution
 
 EPSILON = 0.1
 
@@ -65,10 +65,10 @@ class TestFitCurveToCollectionOfFoldRates(object):
                                                    resampled_target_data)
         archiver = FileArchiver()
         archiver.save_results(target_data, prediction,
-                              "test/output/test_fit_curve_results.txt")
+                              "test_fit_curve_results.txt")
 
-        param_dist.save_to_file("test/output/parameter_distribution_from_curve_fit.pkl")
+        param_dist.save_to_file("parameter_distribution_from_curve_fit.pkl")
         reloaded_param_dist = ParameterSetDistribution()
-        reloaded_param_dist.load_from_file("test/output/parameter_distribution_from_curve_fit.pkl")
+        reloaded_param_dist.load_from_file("parameter_distribution_from_curve_fit.pkl")
         nose.tools.eq_(param_dist, reloaded_param_dist,
                        "Reloaded parameter distribution doesn't match.")

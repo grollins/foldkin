@@ -1,6 +1,6 @@
 import nose.tools
-from folding.coop_model import CoopModelFactory
-from folding.coop_model_parameter_set import CoopModelParameterSet
+from foldkin.coop_model import CoopModelFactory
+from foldkin.coop_model_parameter_set import CoopModelParameterSet
 
 
 @nose.tools.istest

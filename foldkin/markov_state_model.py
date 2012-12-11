@@ -1,5 +1,5 @@
 import numpy
-from model import Model
+import base.model
 
 class State(object):
     def __init__(self, id_str):
@@ -21,7 +21,7 @@ class Route(object):
                                  self.rate_function(0.))
         return my_str
 
-class MarkovStateModel(Model):
+class MarkovStateModel(base.model.Model):
     def __init__(self, state_enumerator, route_mapper, parameter_set,
                  noisy=False):
         super(MarkovStateModel, self).__init__()

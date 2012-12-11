@@ -1,5 +1,5 @@
-from folding.scipy_optimizer import ScipyOptimizer
-import folding.simple_model as simple_model
+from foldkin.scipy_optimizer import ScipyOptimizer
+import foldkin.simple_model as simple_model
 import nose.tools
 from types import FloatType
 

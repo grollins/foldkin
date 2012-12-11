@@ -1,5 +1,5 @@
-from folding.scipy_optimizer import ScipyOptimizer
-import folding.curve_fit_one_feature_model as curve
+from foldkin.scipy_optimizer import ScipyOptimizer
+import foldkin.curve_fit_one_feature_model as curve
 import nose.tools
 from types import FloatType
 
