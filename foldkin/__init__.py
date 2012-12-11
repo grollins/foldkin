@@ -1,11 +1,1 @@
-#!/usr/bin/env python
-import base.archiver
-import base.data_predictor
-import base.data_selector
-import base.judge
-import base.model_factory
-import base.model
-import base.parameter_optimizer
-import base.parameter_set
-import base.prediction
-import base.target_data
+import base
