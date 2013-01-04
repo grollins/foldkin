@@ -36,7 +36,7 @@ class CurveFitOneFeatureDataPredictor(base.data_predictor.DataPredictor):
         a = model.get_parameter('a')
         b = model.get_parameter('b')
         c = model.get_parameter('c')
-        return self.prediction_factory(a * feature_array**b + c)
+        return self.prediction_factory(a * (feature_array**b) + c)
 
 
 class CurveFitOneFeatureTargetData(base.target_data.TargetData):
@@ -56,6 +56,11 @@ class CurveFitOneFeatureTargetData(base.target_data.TargetData):
 
     def get_notes(self):
         return []
+
+    def to_data_frame(self):
+        d = {'feature':self.feature, 'target':self.target}
+        df = pandas.DataFrame(d, index=range(len(self.feature)))
+        return df
 
 
 class CurveFitOneFeatureParameterSet(base.parameter_set.ParameterSet):
