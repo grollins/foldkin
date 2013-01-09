@@ -1,14 +1,14 @@
-import base
+import foldkin.base
 import numpy
 from sklearn.metrics import mean_squared_error
 
-class KingsFeatureModelFactory(base.model_factory.ModelFactory):
-    """KingsFeatureModelFactory creates a KingsFeatureModel."""
+class CurveFitOneFeatureModelFactory(foldkin.base.model_factory.ModelFactory):
+    """CurveFitOneFeatureModelFactory creates a CurveFitOneFeatureModel."""
     def create_model(self, parameter_set):
-        return KingsFeatureModel(parameter_set)
+        return CurveFitOneFeatureModel(parameter_set)
 
 
-class KingsFeatureModel(base.model.Model):
+class CurveFitOneFeatureModel(foldkin.base.model.Model):
     def __init__(self, parameter_set):
         self.parameter_set = parameter_set
 
@@ -16,37 +16,61 @@ class KingsFeatureModel(base.model.Model):
         return self.parameter_set.get_parameter(parameter_name)
 
 
-class KingsFeaturePrediction(base.prediction.Prediction):
-    """docstring for KingsFeaturePrediction"""
+class CurveFitOneFeaturePrediction(foldkin.base.prediction.Prediction):
+    """docstring for CurveFitOneFeaturePrediction"""
     def __init__(self, y_array):
-        super(KingsFeaturePrediction, self).__init__()
+        super(CurveFitOneFeaturePrediction, self).__init__()
         self.y_array = y_array
 
     def as_array(self):
         return self.y_array
 
 
-class KingsFeatureDataPredictor(base.data_predictor.DataPredictor):
-    """docstring for KingsFeaturePredictor"""
+class CurveFitOneFeatureDataPredictor(foldkin.base.data_predictor.DataPredictor):
+    """docstring for CurveFitOneFeaturePredictor"""
     def __init__(self):
-        super(KingsFeatureDataPredictor, self).__init__()
-        self.prediction_factory = KingsFeaturePrediction
+        super(CurveFitOneFeatureDataPredictor, self).__init__()
+        self.prediction_factory = CurveFitOneFeaturePrediction
 
-    def predict_data(self, model, aco, coc1, coc2):
+    def predict_data(self, model, feature_array):
         a = model.get_parameter('a')
         b = model.get_parameter('b')
         c = model.get_parameter('c')
-        return self.prediction_factory(-a * aco + a**2 * coc1 + b * coc2 + c)
+        return self.prediction_factory(a * (feature_array**b) + c)
 
 
-class KingsFeatureParameterSet(base.parameter_set.ParameterSet):
-    """KingsFeatureParameterSet has two parameters, a and b."""
+class CurveFitOneFeatureTargetData(foldkin.base.target_data.TargetData):
+    """docstring for CurveFitOneFeatureTargetData"""
     def __init__(self):
-        super(KingsFeatureParameterSet, self).__init__()
+        super(CurveFitOneFeatureTargetData, self).__init__()
+
+    def load_data(self):
+        self.feature = numpy.arange(0.0, 10.0, 0.1)
+        self.target = 2.0 * self.feature + 5.0
+
+    def get_feature(self):
+        return self.feature
+
+    def get_target(self):
+        return self.target
+
+    def get_notes(self):
+        return []
+
+    def to_data_frame(self):
+        d = {'feature':self.feature, 'target':self.target}
+        df = pandas.DataFrame(d, index=range(len(self.feature)))
+        return df
+
+
+class CurveFitOneFeatureParameterSet(foldkin.base.parameter_set.ParameterSet):
+    """CurveFitOneFeatureParameterSet has two parameters, a and b."""
+    def __init__(self):
+        super(CurveFitOneFeatureParameterSet, self).__init__()
         self.parameter_dict = {'a':0.0, 'b':1.0, 'c':0.0}
         self.bounds_dict = {'a':(None, None),
                             'b':(None, None),
-                            'c':(None, None)}
+                            'c':(None, None),}
 
     def __str__(self):
         my_array = self.as_array()
@@ -89,19 +113,14 @@ class KingsFeatureParameterSet(base.parameter_set.ParameterSet):
         return bounds
 
 
-class KingsFeatureJudge(base.judge.Judge):
-    """docstring for KingsFeatureJudge"""
+class CurveFitOneFeatureJudge(foldkin.base.judge.Judge):
+    """docstring for CurveFitOneFeatureJudge"""
     def __init__(self):
-        super(KingsFeatureJudge, self).__init__()
+        super(CurveFitOneFeatureJudge, self).__init__()
 
     def judge_prediction(self, model, data_predictor, target_data):
         feature_array = target_data.get_feature()
-        aco = feature_array[:,0]
-        coc1 = feature_array[:,1]
-        coc2 = feature_array[:,2]
         target_array = target_data.get_target()
-        prediction = data_predictor.predict_data(model, aco, coc1, coc2)
+        prediction = data_predictor.predict_data(model, feature_array)
         prediction_array = prediction.as_array()
-        error_msg = "%s %s" % (prediction_array.shape, target_array.shape)
-        assert prediction_array.shape == target_array.shape, error_msg
         return mean_squared_error(target_array, prediction_array), prediction

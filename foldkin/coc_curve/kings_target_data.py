@@ -1,10 +1,10 @@
 import os
 import pandas
 import numpy
-import base.target_data
+import foldkin.base.target_data
 from copy import deepcopy
 
-class KingsTargetData(base.target_data.TargetData):
+class KingsTargetData(foldkin.base.target_data.TargetData):
     """KingsTargetData reads from a table that looks like this:
     N,L,aco,rco,coc1,coc2,logkf,name,fold,pdb
     3,73,12.96,0.18,0.78,17.14,5.516,a3D,a,2A3D

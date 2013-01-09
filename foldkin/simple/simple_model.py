@@ -1,13 +1,13 @@
-import base
+import foldkin.base
 import numpy
 
-class SimpleModelFactory(base.model_factory.ModelFactory):
+class SimpleModelFactory(foldkin.base.model_factory.ModelFactory):
     """SimpleModelFactory creates a SimpleModel."""
     def create_model(self, parameter_set):
         return SimpleModel(parameter_set)
 
 
-class SimpleModel(base.model.Model):
+class SimpleModel(foldkin.base.model.Model):
     def __init__(self, parameter_set):
         self.parameter_set = parameter_set
 
@@ -15,7 +15,7 @@ class SimpleModel(base.model.Model):
         return self.parameter_set.get_parameter(parameter_name)
 
 
-class SimplePrediction(base.prediction.Prediction):
+class SimplePrediction(foldkin.base.prediction.Prediction):
     """docstring for SimplePrediction"""
     def __init__(self, y):
         super(SimplePrediction, self).__init__()
@@ -25,7 +25,7 @@ class SimplePrediction(base.prediction.Prediction):
         return numpy.array([self.y])
 
 
-class SimpleDataPredictor(base.data_predictor.DataPredictor):
+class SimpleDataPredictor(foldkin.base.data_predictor.DataPredictor):
     """docstring for SimplePredictor"""
     def __init__(self):
         super(SimpleDataPredictor, self).__init__()
@@ -36,7 +36,7 @@ class SimpleDataPredictor(base.data_predictor.DataPredictor):
         return self.prediction_factory( (x - 3)**2 + 2 )
 
 
-class SimpleTargetData(base.target_data.TargetData):
+class SimpleTargetData(foldkin.base.target_data.TargetData):
     """docstring for SimpleTargetData"""
     def __init__(self):
         super(SimpleTargetData, self).__init__()
@@ -54,7 +54,7 @@ class SimpleTargetData(base.target_data.TargetData):
         return []
 
 
-class SimpleParameterSet(base.parameter_set.ParameterSet):
+class SimpleParameterSet(foldkin.base.parameter_set.ParameterSet):
     """SimpleParameterSet has one parameter, x."""
     def __init__(self):
         super(SimpleParameterSet, self).__init__()
@@ -86,7 +86,7 @@ class SimpleParameterSet(base.parameter_set.ParameterSet):
         return [ (None, None) ]
 
 
-class SimpleJudge(base.judge.Judge):
+class SimpleJudge(foldkin.base.judge.Judge):
     """docstring for SimpleJudge"""
     def __init__(self):
         super(SimpleJudge, self).__init__()

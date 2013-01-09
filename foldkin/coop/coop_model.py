@@ -1,13 +1,13 @@
 import numpy
 import scipy.misc
-import base.model_factory
-from markov_state_model import State, Route, MarkovStateModel
+from foldkin.base.model_factory import ModelFactory
+from foldkin.markov_state_model import State, Route, MarkovStateModel
 
 def n_choose_k(n,k):
     assert n > 0, "%d %d" % (n, k)
     return scipy.misc.comb(n, k)
 
-class CoopModelFactory(base.model_factory.ModelFactory):
+class CoopModelFactory(ModelFactory):
     """docstring for CoopModelFactory"""
     def __init__(self):
         super(CoopModelFactory, self).__init__()

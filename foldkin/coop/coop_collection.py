@@ -1,20 +1,20 @@
-import base.model_factory
-import base.model
-import coop_model
+from foldkin.base.model_factory import ModelFactory
+from foldkin.base.model import Model
+from foldkin.coop.coop_model import CoopModelFactory
 from copy import deepcopy
 
 def clone(ps):
     return deepcopy(ps)
 
 
-class CoopCollectionFactory(base.model_factory.ModelFactory):
+class CoopCollectionFactory(ModelFactory):
     """docstring for CoopCollectionFactory"""
     def __init__(self, parameter_name, parameter_values):
         super(CoopCollectionFactory, self).__init__()
         assert parameter_name is 'N'
         self.parameter_name = parameter_name
         self.parameter_values = parameter_values
-        self.coop_model_factory = coop_model.CoopModelFactory()
+        self.coop_model_factory = CoopModelFactory()
 
     def create_model(self, parameter_set):
         coop_collection = CoopCollection(parameter_set)
@@ -27,7 +27,7 @@ class CoopCollectionFactory(base.model_factory.ModelFactory):
         return coop_collection
 
 
-class CoopCollection(base.model.Model):
+class CoopCollection(Model):
     """docstring for CoopCollection"""
     def __init__(self, parameter_set):
         super(CoopCollection, self).__init__()

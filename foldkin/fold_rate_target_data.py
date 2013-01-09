@@ -2,9 +2,9 @@ import os
 import pandas
 import numpy
 from copy import deepcopy
-import base.target_data
+from foldkin.base.target_data import TargetData
 
-class SingleFoldRateTargetData(base.target_data.TargetData):
+class SingleFoldRateTargetData(TargetData):
     """SingleFoldRateTargetData reads from a table that looks like this:
     N,L,aco,rco,coc1,coc2,logkf,name,fold,pdb
     3,73,12.96,0.18,0.78,17.14,5.516,a3D,a,2A3D
@@ -43,7 +43,7 @@ class SingleFoldRateTargetData(base.target_data.TargetData):
         return df
 
 
-class FoldRateCollectionTargetData(base.target_data.TargetData):
+class FoldRateCollectionTargetData(TargetData):
     """FoldRateCollectionTargetData reads from a table that looks like this:
     N,L,aco,rco,coc1,coc2,logkf,name,fold,pdb
     3,73,12.96,0.18,0.78,17.14,5.516,a3D,a,2A3D
@@ -67,7 +67,7 @@ class FoldRateCollectionTargetData(base.target_data.TargetData):
 
     def iter_feature(self):
         for feature, exp_rate in self:
-            yield feature, exp_rates
+            yield feature, exp_rate
 
     def has_element(self, element):
         """Expecting element to be (feature, exp_rate) tuple."""
@@ -76,7 +76,7 @@ class FoldRateCollectionTargetData(base.target_data.TargetData):
         is_found = False
         for i in xrange(len(self.feature)):
             stop_condition1 = (self.feature[i] == feature_being_searched_for)
-            stop_condition2 = (self.exp_rate[i] == exp_rate_that_goes_with_that_feature)
+            stop_condition2 = (self.exp_rates[i] == exp_rate_that_goes_with_that_feature)
             if stop_condition1 and stop_condition2:
                is_found = True
                break

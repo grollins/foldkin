@@ -1,7 +1,7 @@
 import numpy
-import base.parameter_set
+from foldkin.base.parameter_set import ParameterSet
 
-class CoopModelParameterSet(base.parameter_set.ParameterSet):
+class CoopModelParameterSet(ParameterSet):
     """docstring for CoopModelParameterSet"""
     def __init__(self):
         super(CoopModelParameterSet, self).__init__()

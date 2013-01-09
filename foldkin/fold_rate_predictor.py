@@ -1,6 +1,7 @@
 import numpy
 import base.data_predictor
-from fold_rate_prediction import SingleFoldRatePrediction, FoldRateCollectionPrediction
+from foldkin.fold_rate_prediction import SingleFoldRatePrediction,\
+                                         FoldRateCollectionPrediction
 
 class SingleFoldRatePredictor(base.data_predictor.DataPredictor):
     """docstring for FoldRatePredictor"""

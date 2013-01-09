@@ -1,7 +1,7 @@
 import nose.tools
 from foldkin.scipy_optimizer import ScipyOptimizer
-from foldkin.coop_collection import CoopCollectionFactory
-from foldkin.coop_model_parameter_set import CoopModelParameterSet
+from foldkin.coop.coop_collection import CoopCollectionFactory
+from foldkin.coop.coop_model_parameter_set import CoopModelParameterSet
 from foldkin.fold_rate_judge import FoldRateJudge
 from foldkin.fold_rate_predictor import FoldRateCollectionPredictor
 from foldkin.fold_rate_target_data import FoldRateCollectionTargetData

@@ -1,6 +1,6 @@
 import nose.tools
 from foldkin.scipy_optimizer import ScipyOptimizer
-import foldkin.curve_fit_one_feature_model as curve
+import foldkin.one_param_curve.curve_fit_one_feature_model as curve
 from foldkin.fold_rate_target_data import FoldRateCollectionTargetData
 from foldkin.file_archiver import FileArchiver
 from foldkin.bootstrap_selector import BootstrapSelector
