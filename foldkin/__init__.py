@@ -1,5 +1,5 @@
 import base
 import coop
-import coc_curve
+import kings
 import one_param_curve
 import simple
