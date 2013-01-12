@@ -4,13 +4,17 @@ from foldkin.kings.contact_order_model import ContactOrderModelFactory
 
 class ContactOrderCollectionFactory(ModelFactory):
     """docstring for ContactOrderCollectionFactory"""
-    def __init__(self):
+    def __init__(self, pdb_id_list):
         super(ContactOrderCollectionFactory, self).__init__()
-        self.contact_order_model_factory = ContactOrderModelFactory()
+        self.element_model_factory = ContactOrderModelFactory()
+        self.pdb_id_list = pdb_id_list
 
     def create_model(self, parameter_set):
-        contact_order_collection = ContactOrderCollection(parameter_set)
-        return contact_order_collection
+        new_collection = ContactOrderCollection(parameter_set)
+        for this_id in self.pdb_id_list:
+            this_model = self.element_model_factory.create_model(this_id, parameter_set)
+            new_collection.add_element(this_id, this_model)
+        return new_collection
 
 
 class ContactOrderCollection(object):

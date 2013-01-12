@@ -1,5 +1,5 @@
 import nose.tools
-from foldkin.zam_protein import create_zam_protein
+from foldkin.zam_protein import create_zam_protein_from_path
 from foldkin.contact_order import compute_aco, compute_coc1, compute_coc2
 
 EPSILON = 0.01
@@ -11,7 +11,7 @@ EXPECTED_PROTG_COC2 = 35.17
 @nose.tools.istest
 def test_computes_correct_aco():
     """docstring for test_computes_correct_aco"""
-    zam_protein = create_zam_protein(PROTG_PATH)
+    zam_protein = create_zam_protein_from_path(PROTG_PATH)
     aco = compute_aco(zam_protein)
     error_msg = "Expected %.2f, got %.2f" % (EXPECTED_PROTG_ACO, aco)
     aco_diff = abs(aco - EXPECTED_PROTG_ACO)
@@ -20,7 +20,7 @@ def test_computes_correct_aco():
 @nose.tools.istest
 def test_computes_correct_coc1():
     """docstring for test_computes_correct_coc1"""
-    zam_protein = create_zam_protein(PROTG_PATH)
+    zam_protein = create_zam_protein_from_path(PROTG_PATH)
     coc1 = compute_coc1(zam_protein)
     error_msg = "Expected %.2f, got %.2f" % (EXPECTED_PROTG_COC1, coc1)
     coc1_diff = abs(coc1 - EXPECTED_PROTG_COC1)
@@ -29,7 +29,7 @@ def test_computes_correct_coc1():
 @nose.tools.istest
 def test_computes_correct_coc2():
     """docstring for test_computes_correct_coc2"""
-    zam_protein = create_zam_protein(PROTG_PATH)
+    zam_protein = create_zam_protein_from_path(PROTG_PATH)
     coc2 = compute_coc2(zam_protein)
     error_msg = "Expected %.2f, got %.2f" % (EXPECTED_PROTG_COC2, coc2)
     coc2_diff = abs(coc2 - EXPECTED_PROTG_COC2)

@@ -7,6 +7,8 @@ from foldkin.fold_rate_judge import FoldRateJudge
 from foldkin.kings.contact_order_collection import ContactOrderCollectionFactory
 from foldkin.kings.contact_order_parameter_set import ContactOrderParameterSet
 from foldkin.kings.contact_order_target_data import ContactOrderCollectionTargetData
+from foldkin.kings.contact_order_predictor import ContactOrderCollectionPredictor
+
 
 @nose.tools.istest
 class FitKingsModelToCollectionOfFoldRates(object):
@@ -28,19 +30,21 @@ class FitKingsModelToCollectionOfFoldRates(object):
            The fitting function is y = -a * aco + a^2 * coc1 + b*coc2 + c,
            where abc are fit parameters.
         '''
-        model_factory = ContactOrderModelFactory()
         initial_parameters = ContactOrderParameterSet()
-        initial_parameters.set_parameter('a', 0.1)
         judge = FoldRateJudge()
         data_predictor = ContactOrderCollectionPredictor()
-        target_data = ContactOrderTargetData()
-        target_data.load_data()
+        target_data = ContactOrderCollectionTargetData()
+        target_data.load_data('aco')
         bs_selector = BootstrapSelector()
+        resampled_target_data = bs_selector.select_data(target_data, size=3)
+        pdb_id_list = list(resampled_target_data.get_pdb_ids())
+        model_factory = ContactOrderCollectionFactory(pdb_id_list)
         optimizer = ScipyOptimizer(epsilon=1e-3)
         param_dist = ParameterSetDistribution()
 
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
-                                        judge, data_predictor, target_data)
+                                        judge, data_predictor,
+                                        resampled_target_data)
         new_params, score = optimizer.optimize_parameters(score_fcn,
                                                           initial_parameters)
         print new_params
@@ -49,8 +53,8 @@ class FitKingsModelToCollectionOfFoldRates(object):
         optimized_model = model_factory.create_model(new_params)
         score, prediction = judge.judge_prediction(optimized_model, 
                                                    data_predictor,
-                                                   target_data)
+                                                   resampled_target_data)
         archiver = FileArchiver()
-        archiver.save_results(target_data, prediction,
+        archiver.save_results(resampled_target_data, prediction,
                               "kings_fit_results.txt")
         # param_dist.save_to_file("parameter_distribution_from_curve_fit.pkl")

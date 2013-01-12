@@ -3,15 +3,15 @@ from foldkin.fold_rate_target_data import FoldRateCollectionTargetData
 from foldkin.bootstrap_selector import BootstrapSelector
 
 @nose.tools.istest
-def resampled_target_data_same_size_as_original_target_data():
+def resampled_target_data_one_datapoint_smaller_than_original_target_data():
     target_data = FoldRateCollectionTargetData()
     target_data.load_data('N')
     bs_selector = BootstrapSelector()
     resampled_target_data = bs_selector.select_data(target_data)
-    original_length = len(target_data)
+    original_length_minus_one = len(target_data) - 1
     resampled_length = len(resampled_target_data)
-    error_message = "Expected %d, got %d" % (original_length, resampled_length)
-    nose.tools.eq_(original_length, resampled_length, error_message)
+    error_message = "Expected %d, got %d" % (original_length_minus_one, resampled_length)
+    nose.tools.eq_(original_length_minus_one, resampled_length, error_message)
 
 @nose.tools.istest
 def all_elements_of_resampled_data_are_found_in_original_data():

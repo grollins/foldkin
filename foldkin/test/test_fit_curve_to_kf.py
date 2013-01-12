@@ -62,7 +62,7 @@ class TestFitCurveToCollectionOfFoldRates(object):
         optimized_model = model_factory.create_model(new_params)
         score, prediction = judge.judge_prediction(optimized_model, 
                                                    data_predictor,
-                                                   resampled_target_data)
+                                                   target_data)
         archiver = FileArchiver()
         archiver.save_results(target_data, prediction,
                               "test_fit_curve_results.txt")

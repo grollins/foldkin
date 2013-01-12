@@ -11,5 +11,6 @@ class FoldRateJudge(base.judge.Judge):
         target_array = target_data.get_target()
         prediction = data_predictor.predict_data(model, feature_array)
         prediction_array = prediction.as_array()
-        assert target_array.shape == prediction_array.shape
+        error_msg = "%s  %s" % (target_array.shape, prediction_array.shape)
+        assert target_array.shape == prediction_array.shape, error_msg
         return mean_squared_error(target_array, prediction_array), prediction
