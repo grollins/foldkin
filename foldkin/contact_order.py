@@ -1,11 +1,11 @@
 import numpy
 
 def compute_aco(zam_protein):
-    return zam_protein.MeanContactOrder()
+    return zam_protein.compute_aco()
 
 def iter_contacts(zam_protein):
     # contacts are 0-indexed
-    res_contact_list = zam_protein.ResContactList()
+    res_contact_list = zam_protein.get_contact_list()
     for c in res_contact_list:
         yield c
 
@@ -15,7 +15,7 @@ def compute_type2_contact_pairs(zam_protein):
         residue_i = c[0]
         residue_j = c[1]
         residue_m_bounds = range(residue_i, residue_j)
-        m_contact_list = zam_protein.ResContactList(ResInd=residue_m_bounds)
+        m_contact_list = zam_protein.get_contact_list(residue_inds=residue_m_bounds)
         for c2 in m_contact_list:
             c_and_c2_are_same_contact = (c == c2)
             i_and_m_are_equal = (c[0] == c2[0])
@@ -38,7 +38,7 @@ def compute_type3_contact_pairs(zam_protein):
         residue_i = c[0]
         residue_j = c[1]
         residue_m_bounds = range(residue_i+1, len(zam_protein))
-        m_contact_list = zam_protein.ResContactList(ResInd=residue_m_bounds)
+        m_contact_list = zam_protein.get_contact_list(residue_inds=residue_m_bounds)
         for c3 in m_contact_list:
             c_and_c3_are_same_contact = (c == c3)
             m_greater_than_or_equal_to_j = (c3[0] >= c[1])
@@ -59,7 +59,7 @@ def compute_type3_contact_pairs(zam_protein):
 
 def compute_coc1(zam_protein):
     seq_sep = []
-    num_contacts = len(zam_protein.ResContactList())
+    num_contacts = len(zam_protein.get_contact_list())
     for c in iter_contacts(zam_protein):
         seq_sep.append(c[1] - c[0])
     seq_sep_array = numpy.array(seq_sep)
@@ -68,7 +68,7 @@ def compute_coc1(zam_protein):
     return coc1
 
 def compute_coc2(zam_protein):
-    num_contacts = len(zam_protein.ResContactList())
+    num_contacts = len(zam_protein.get_contact_list())
     c2_list = compute_type2_contact_pairs(zam_protein)
     c3_list = compute_type3_contact_pairs(zam_protein)
     c3_seq_sep = []

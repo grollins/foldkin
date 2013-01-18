@@ -13,7 +13,7 @@ class ContactOrderCollectionFactory(ModelFactory):
         new_collection = ContactOrderCollection(parameter_set)
         for this_id in self.pdb_id_list:
             this_model = self.element_model_factory.create_model(this_id, parameter_set)
-            new_collection.add_element(this_id, this_model)
+            new_collection.add_element(this_model)
         return new_collection
 
 
@@ -22,23 +22,22 @@ class ContactOrderCollection(object):
     def __init__(self, parameter_set):
         super(ContactOrderCollection, self).__init__()
         self.parameter_set = parameter_set
-        self.collection = {}
+        self.collection = []
 
     def __iter__(self):
-        for key, element in self.collection.iteritems():
-            yield key, element
+        for element in self.collection:
+            yield element
 
-    def add_element(self, parameter_value, element):
-        if self.collection.has_key(parameter_value):
-            return
-        else:
-            self.collection[parameter_value] = element
+    def add_element(self, element):
+        self.collection.append(element)
 
-    def get_element(self, parameter_value):
-        if self.collection.has_key(parameter_value):
-            return self.collection[parameter_value]
-        else:
-            return None
+    def get_element(self, id_string):
+        found_element = None
+        for element in self.collection:
+            if element.get_id() == id_string:
+                found_element = element
+                break
+        return found_element
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)

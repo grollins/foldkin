@@ -4,23 +4,39 @@ from sklearn.metrics import mean_squared_error
 
 class CurveFitOneFeatureModelFactory(foldkin.base.model_factory.ModelFactory):
     """CurveFitOneFeatureModelFactory creates a CurveFitOneFeatureModel."""
+    def __init__(self, id_list):
+        self.id_list = id_list
+
     def create_model(self, parameter_set):
-        return CurveFitOneFeatureModel(parameter_set)
+        return CurveFitOneFeatureModel(parameter_set, self.id_list)
 
 
 class CurveFitOneFeatureModel(foldkin.base.model.Model):
-    def __init__(self, parameter_set):
+    def __init__(self, parameter_set, id_list):
         self.parameter_set = parameter_set
+        self.id_list = id_list
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)
 
+    def get_id_list(self):
+        return self.id_list
+
 
 class CurveFitOneFeaturePrediction(foldkin.base.prediction.Prediction):
     """docstring for CurveFitOneFeaturePrediction"""
-    def __init__(self, y_array):
+    def __init__(self, y_array, id_list):
         super(CurveFitOneFeaturePrediction, self).__init__()
         self.y_array = y_array
+        self.id_list = id_list
+
+    def __iter__(self):
+        if self.id_list is None:
+            for this_y in self.y_array:
+                yield '', this_y
+        else:
+            for this_id, this_y in zip(self.id_list, self.y_array):
+                yield this_id, this_y
 
     def as_array(self):
         return self.y_array
@@ -36,7 +52,8 @@ class CurveFitOneFeatureDataPredictor(foldkin.base.data_predictor.DataPredictor)
         a = model.get_parameter('a')
         b = model.get_parameter('b')
         c = model.get_parameter('c')
-        return self.prediction_factory(a * (feature_array**b) + c)
+        prediction_array = a * (feature_array**b) + c
+        return self.prediction_factory(prediction_array, model.get_id_list())
 
 
 class CurveFitOneFeatureTargetData(foldkin.base.target_data.TargetData):
@@ -54,8 +71,8 @@ class CurveFitOneFeatureTargetData(foldkin.base.target_data.TargetData):
     def get_target(self):
         return self.target
 
-    def get_notes(self):
-        return []
+    def get_id_list(self):
+        return [''] * len(self.feature)
 
     def to_data_frame(self):
         d = {'feature':self.feature, 'target':self.target}
@@ -118,9 +135,14 @@ class CurveFitOneFeatureJudge(foldkin.base.judge.Judge):
     def __init__(self):
         super(CurveFitOneFeatureJudge, self).__init__()
 
-    def judge_prediction(self, model, data_predictor, target_data):
+    def judge_prediction(self, model, data_predictor, target_data, noisy=False):
         feature_array = target_data.get_feature()
         target_array = target_data.get_target()
         prediction = data_predictor.predict_data(model, feature_array)
         prediction_array = prediction.as_array()
+
+        if noisy:
+            for i,p in enumerate(prediction):
+                print p, prediction_array[i], target_array[i]
+
         return mean_squared_error(target_array, prediction_array), prediction

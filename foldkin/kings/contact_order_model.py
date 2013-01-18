@@ -16,8 +16,12 @@ class ContactOrderModel(Model):
     """docstring for ContactOrderModel"""
     def __init__(self, pdb_id, parameter_set):
         super(ContactOrderModel, self).__init__()
+        self.pdb_id = pdb_id
         self.zam_protein = create_zam_protein_from_pdb_id(pdb_id)
         self.parameter_set = parameter_set
+
+    def get_id(self):
+        return self.pdb_id
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)
@@ -35,6 +39,7 @@ class ContactOrderModel(Model):
                                   residue2_number)
             new_contact_list.append(new_contact)
         return new_contact_list
+
 
 class Contact(object):
     """docstring for Contact"""

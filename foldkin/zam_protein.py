@@ -24,8 +24,14 @@ class ZamProtein(object):
         super(ZamProtein, self).__init__()
         self.protein = protein
 
-    def get_contact_list(self):
-        return self.protein.ResContactList()
+    def __len__(self):
+        return len(self.protein)
+
+    def get_contact_list(self, residue_inds=None):
+        return self.protein.ResContactList(residue_inds)
 
     def get_sequence(self):
         return SeqToAA1(self.protein.Seq)
+
+    def compute_aco(self):
+        return self.protein.MeanContactOrder()

@@ -16,7 +16,3 @@ class TargetData(object):
     def get_target(self):
         return
 
-    @abc.abstractmethod
-    def get_notes(self):
-        return
-

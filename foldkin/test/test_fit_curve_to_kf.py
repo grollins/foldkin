@@ -17,7 +17,8 @@ class TestFitCurveToCollectionOfFoldRates(object):
             current_model = model_factory.create_model(parameter_set)
             score, prediction = judge.judge_prediction(current_model,
                                                        data_predictor,
-                                                       target_data)
+                                                       target_data,
+                                                       noisy=True)
             return score
         return f
 
@@ -28,7 +29,6 @@ class TestFitCurveToCollectionOfFoldRates(object):
            is y = a * x^b + c, where x is the feature and
            abc are fit parameters.
         '''
-        model_factory = curve.CurveFitOneFeatureModelFactory()
         initial_parameters = curve.CurveFitOneFeatureParameterSet()
         initial_parameters.set_parameter('a', 0.0)
         initial_parameters.set_parameter('b', 1.0)
@@ -38,6 +38,8 @@ class TestFitCurveToCollectionOfFoldRates(object):
         data_predictor = curve.CurveFitOneFeatureDataPredictor()
         target_data = FoldRateCollectionTargetData()
         target_data.load_data('aco')
+        pdb_id_list = target_data.get_pdb_ids()
+        model_factory = curve.CurveFitOneFeatureModelFactory(pdb_id_list)
         bs_selector = BootstrapSelector()
         optimizer = ScipyOptimizer()
         param_dist = ParameterSetDistribution()

@@ -109,8 +109,8 @@ class ContactOrderCollectionTargetData(TargetData):
     def get_pdb_ids(self):
         return self.pdb_ids
 
-    def get_notes(self):
-        return [self.names, self.folds, self.pdb_ids]
+    def get_names(self):
+        return self.names
 
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)

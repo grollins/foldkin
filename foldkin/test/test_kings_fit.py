@@ -36,7 +36,7 @@ class FitKingsModelToCollectionOfFoldRates(object):
         target_data = ContactOrderCollectionTargetData()
         target_data.load_data('aco')
         bs_selector = BootstrapSelector()
-        resampled_target_data = bs_selector.select_data(target_data, size=3)
+        resampled_target_data = bs_selector.select_data(target_data, size=10)
         pdb_id_list = list(resampled_target_data.get_pdb_ids())
         model_factory = ContactOrderCollectionFactory(pdb_id_list)
         optimizer = ScipyOptimizer(epsilon=1e-3)

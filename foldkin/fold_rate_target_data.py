@@ -96,6 +96,7 @@ class FoldRateCollectionTargetData(TargetData):
         self.exp_rates = numpy.array(data_table['logkf'], numpy.float32)
         self.names = numpy.array(data_table.index.tolist(), numpy.str)
         self.folds = numpy.array(data_table['fold'], numpy.str)
+        self.pdb_ids = numpy.array(data_table['pdb'], numpy.str)
         return
 
     def get_feature(self):
@@ -104,8 +105,11 @@ class FoldRateCollectionTargetData(TargetData):
     def get_target(self):
         return self.exp_rates
 
+    def get_pdb_ids(self):
+        return self.pdb_ids
+
     def get_notes(self):
-        return [self.names, self.folds]
+        return [self.names, self.folds, self.pdb_ids]
 
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)
@@ -113,9 +117,11 @@ class FoldRateCollectionTargetData(TargetData):
         my_clone.exp_rates = my_clone.exp_rates[inds]
         my_clone.names = my_clone.names[inds]
         my_clone.folds = my_clone.folds[inds]
+        my_clone.pdb_ids = my_clone.pdb_ids[inds]
         return my_clone
 
     def to_data_frame(self):
-        d = {'feature':self.feature, 'logkf':self.exp_rates, 'fold':self.folds}
+        d = {'feature':self.feature, 'logkf':self.exp_rates, 'fold':self.folds,
+             'pdb_id':self.pdb_ids}
         df = pandas.DataFrame(d, index=self.names)
         return df

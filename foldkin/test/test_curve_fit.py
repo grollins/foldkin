@@ -24,7 +24,6 @@ class TestCurveFitOneFeatureFit(object):
            The fitting function is y= a * x^b + c.
            The expected fit parameters are a = 2, b = 1, and c = 5.
         '''
-        model_factory = curve.CurveFitOneFeatureModelFactory()
         initial_parameters = curve.CurveFitOneFeatureParameterSet()
         initial_parameters.set_parameter('a', 0.0)
         initial_parameters.set_parameter('b', 1.0)
@@ -33,6 +32,8 @@ class TestCurveFitOneFeatureFit(object):
         data_predictor = curve.CurveFitOneFeatureDataPredictor()
         target_data = curve.CurveFitOneFeatureTargetData()
         target_data.load_data()
+        id_list = target_data.get_id_list()
+        model_factory = curve.CurveFitOneFeatureModelFactory(id_list)
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
