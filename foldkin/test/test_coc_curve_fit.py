@@ -44,8 +44,8 @@ class FitKingsModelToCollectionOfFoldRates(object):
 
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
-        new_params, score = optimizer.optimize_parameters(score_fcn,
-                                                          initial_parameters)
+        results = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score, num_iterations = results
         print new_params
 
         # compute prediction from optimized params

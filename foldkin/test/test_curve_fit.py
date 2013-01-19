@@ -37,7 +37,8 @@ class TestCurveFitOneFeatureFit(object):
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
-        new_params, score = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        results = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score, num_iterations = results
         error_message = "Expected float, got %s %s" % (type(score), score)
         nose.tools.ok_(type(score) is FloatType, error_message)
         error_message = "Expected ParameterSet, got %s" % new_params

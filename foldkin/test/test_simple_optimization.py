@@ -34,7 +34,8 @@ class TestSimpleOptimization(object):
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
-        new_params, score = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        results = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score, num_iterations = results
         error_message = "Expected float, got %s %s" % (type(score), score)
         nose.tools.ok_(type(score) is FloatType, error_message)
         error_message = "Expected ParameterSet, got %s" % new_params
@@ -44,4 +45,25 @@ class TestSimpleOptimization(object):
                        "Expected score = 2.0, got %s %s" % (type(score), score))
         nose.tools.ok_(abs(3.0 - new_params.get_parameter('x')) < EPSILON,
                        "Expected optimal x = 3.0, got %s" % new_params)
+        return
+
+    @nose.tools.istest
+    def stop_after_specified_number_of_iterations(self):
+        model_factory = simple_model.SimpleModelFactory()
+        initial_parameters = simple_model.SimpleParameterSet()
+        initial_parameters.set_parameter('x', 0.0)
+        judge = simple_model.SimpleJudge()
+        data_predictor = simple_model.SimpleDataPredictor()
+        target_data = simple_model.SimpleTargetData()
+        target_data.load_data()
+        score_fcn = self.make_score_fcn(model_factory, initial_parameters,
+                                        judge, data_predictor, target_data)
+        max_iterations = 1
+        optimizer = ScipyOptimizer(maxfun=max_iterations)
+        print optimizer.maxfun
+        results = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score, num_iterations = results
+        error_msg = "Expected %d iterations, got %d" % (max_iterations, num_iterations)
+        nose.tools.eq_( (num_iterations - max_iterations), 1, error_msg)
+        print error_msg
         return

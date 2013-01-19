@@ -1,7 +1,8 @@
 import nose.tools
 import mock
 import numpy
-from foldkin.kings.contact_order_predictor import ContactOrderCollectionPredictor
+from foldkin.kings.contact_order_predictor import ContactOrderCollectionPredictor,\
+                                                  UniformWeightAcoPredictor
 from foldkin.kings.contact_order_collection import ContactOrderCollectionFactory
 from foldkin.kings.contact_order_target_data import ContactOrderCollectionTargetData
 
@@ -29,7 +30,7 @@ def UniformWeightPredictionMatchesTypicalACOPrediction():
     coc_factory = ContactOrderCollectionFactory(pdb_id_list)
     coc_model = coc_factory.create_model(mock_parameter_set)
 
-    predictor = ContactOrderCollectionPredictor()
+    predictor = ContactOrderCollectionPredictor(UniformWeightAcoPredictor)
     prediction_collection = predictor.predict_data(coc_model, None)
     predicted_logkf = prediction_collection.as_array()
 

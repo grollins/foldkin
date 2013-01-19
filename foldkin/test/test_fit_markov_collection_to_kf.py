@@ -35,8 +35,9 @@ class TestFitManyFoldRates(object):
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
-        new_params, score = optimizer.optimize_parameters(score_fcn,
-                                                          initial_parameters)
+        results = optimizer.optimize_parameters(score_fcn,
+                                                initial_parameters)
+        new_params, score, num_iterations = results
         optimized_model = model_factory.create_model(new_params)
         score, prediction = judge.judge_prediction(optimized_model,
                                                    data_predictor,

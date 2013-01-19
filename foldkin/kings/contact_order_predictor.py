@@ -4,7 +4,7 @@ from foldkin.kings.contact_potential import ThomasDill20
 from foldkin.kings.contact_order_prediction import SingleContactOrderPrediction,\
                                                    ContactOrderCollectionPrediction
 
-def geoff_weight(energy):
+def favor_low_energy_weight_fcn(contact, energy):
     if energy < -0.6:
         weight = 0.1
     elif energy >= -0.6 and energy < -0.01:
@@ -17,43 +17,64 @@ def geoff_weight(energy):
         print "Unexpected energy", energy
     return weight
 
-def uniform_weight(energy):
+def uniform_weight_fcn(contact, energy):
     weight = 1.0
     return weight
 
-class SingleContactOrderPredictor(DataPredictor):
-    """docstring for ContactOrderPredictor"""
+
+class UniformWeightAcoPredictor(DataPredictor):
+    """docstring for UniformWeightAcoPredictor"""
     def __init__(self):
-        super(SingleContactOrderPredictor, self).__init__()
+        super(UniformWeightAcoPredictor, self).__init__()
         self.prediction_factory = SingleContactOrderPrediction
         self.contact_potential = ThomasDill20()
-        self.weight_fcn = uniform_weight
+        self.weight_fcn = uniform_weight_fcn
 
     def predict_data(self, model):
         logk0 = model.get_parameter('logk0')
         gamma = model.get_parameter('gamma')
         contact_list = model.get_contact_list()
-        
+
         first_order_aco_term = 0.0
         for c in contact_list:
             seq_separation = c.get_sequence_separation()
             this_energy = self.contact_potential.compute_energy_of_contact(c)
-            this_weight = self.weight_fcn(this_energy)
+            this_weight = self.weight_fcn(c, this_energy)
             first_order_aco_term += (this_weight * gamma) * abs(seq_separation)
         first_order_aco_term /= len(contact_list)
-        # first_order_aco_term = gamma * model.zam_protein.compute_aco()
-        second_order_aco_term = 0.0
-        coc1_term = 0.0
-        coc2_term = 0.0
-        logkf = logk0 - first_order_aco_term + second_order_aco_term + coc1_term + coc2_term
+        logkf = logk0 - first_order_aco_term
+        return self.prediction_factory(logkf)
+
+
+class FavorLowEnergyAcoPredictor(DataPredictor):
+    """docstring for FavorLowEnergyAcoPredictor"""
+    def __init__(self):
+        super(FavorLowEnergyAcoPredictor, self).__init__()
+        self.prediction_factory = SingleContactOrderPrediction
+        self.contact_potential = ThomasDill20()
+        self.weight_fcn = favor_low_energy_weight_fcn
+
+    def predict_data(self, model):
+        logk0 = model.get_parameter('logk0')
+        gamma = model.get_parameter('gamma')
+        contact_list = model.get_contact_list()
+
+        first_order_aco_term = 0.0
+        for c in contact_list:
+            seq_separation = c.get_sequence_separation()
+            this_energy = self.contact_potential.compute_energy_of_contact(c)
+            this_weight = self.weight_fcn(c, this_energy)
+            first_order_aco_term += (this_weight * gamma) * abs(seq_separation)
+        first_order_aco_term /= len(contact_list)
+        logkf = logk0 - first_order_aco_term
         return self.prediction_factory(logkf)
 
 
 class ContactOrderCollectionPredictor(DataPredictor):
     """docstring for ContactOrderCollectionPredictor"""
-    def __init__(self):
+    def __init__(self, element_predictor):
         super(ContactOrderCollectionPredictor, self).__init__()
-        self.element_predictor = SingleContactOrderPredictor()
+        self.element_predictor = element_predictor()
         self.prediction_factory = ContactOrderCollectionPrediction
 
     def predict_data(self, model_collection, feature_array):

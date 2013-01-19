@@ -18,7 +18,7 @@ class TestFitCurveToCollectionOfFoldRates(object):
             score, prediction = judge.judge_prediction(current_model,
                                                        data_predictor,
                                                        target_data,
-                                                       noisy=True)
+                                                       noisy=False)
             return score
         return f
 
@@ -50,15 +50,16 @@ class TestFitCurveToCollectionOfFoldRates(object):
             score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                             judge, data_predictor,
                                             resampled_target_data)
-            new_params, score = optimizer.optimize_parameters(score_fcn,
-                                                              initial_parameters)
+            results = optimizer.optimize_parameters(score_fcn,
+                                                    initial_parameters)
+            new_params, score, num_iterations = results
             param_dist.add_parameter_set(new_params, score)
 
         # all data
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
                                         judge, data_predictor, target_data)
-        new_params, score = optimizer.optimize_parameters(score_fcn,
-                                                          initial_parameters)
+        results = optimizer.optimize_parameters(score_fcn, initial_parameters)
+        new_params, score, num_iterations = results
 
         # compute prediction from optimized params
         optimized_model = model_factory.create_model(new_params)

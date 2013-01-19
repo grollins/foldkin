@@ -1,6 +1,6 @@
 import nose.tools
 import mock
-from foldkin.kings.contact_order_predictor import SingleContactOrderPredictor
+from foldkin.kings.contact_order_predictor import UniformWeightAcoPredictor
 from foldkin.kings.contact_order_model import ContactOrderModel
 from foldkin.zam_protein import create_zam_protein_from_pdb_id
 
@@ -30,7 +30,7 @@ def UniformWeightPredictionMatchesTypicalACOPrediction(pdb_id):
     mock_parameter_set.get_parameter = mock_get_parameter
     model = ContactOrderModel(pdb_id, mock_parameter_set)
 
-    predictor = SingleContactOrderPredictor()
+    predictor = UniformWeightAcoPredictor()
     predicted_logkf = predictor.predict_data(model).as_array()[0]
     logkf_diff = abs(aco_logkf - predicted_logkf)
     error_msg = "Expected %.2f, got %.2f" % (aco_logkf, predicted_logkf)
