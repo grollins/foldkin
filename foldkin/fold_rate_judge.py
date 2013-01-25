@@ -46,14 +46,13 @@ class TemperatureDependenceJudge(Judge):
         super(TemperatureDependenceJudge, self).__init__()
 
     def judge_prediction(self, fold_model, unfold_model, fold_data_predictor,
-                         unfold_data_predictor, target_data, noisy=False):
-        features = target_data.get_feature()
-        fold_feature_array = features['fold']
-        unfold_feature_array = features['unfold']
-        target = target_data.get_target()
-        fold_target_array = target['fold']
-        unfold_target_array = target['unfold']
-        
+                         unfold_data_predictor, fold_target_data,
+                         unfold_target_data, noisy=False):
+        fold_feature_array = fold_target_data.get_feature()
+        unfold_feature_array = unfold_target_data.get_feature()
+        fold_target_array = fold_target_data.get_target()
+        unfold_target_array = unfold_target_data.get_target()
+
         fold_prediction = fold_data_predictor.predict_data(fold_model)
         fold_prediction_array = fold_prediction.as_array()
         unfold_prediction = unfold_data_predictor.predict_data(unfold_model)
@@ -62,6 +61,8 @@ class TemperatureDependenceJudge(Judge):
         if noisy:
             for i,p in enumerate(fold_prediction):
                 print p, fold_prediction_array[i], fold_target_array[i]
+            for i,p in enumerate(unfold_prediction):
+                print p, unfold_prediction_array[i], unfold_target_array[i]
 
         error_msg = "%s  %s" % (fold_target_array.shape, fold_prediction_array.shape)
         assert fold_target_array.shape == fold_prediction_array.shape, error_msg

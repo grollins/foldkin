@@ -132,44 +132,51 @@ class TemperatureDependenceTargetData(TargetData):
     """docstring for TemperatureDependenceTargetData"""
     def __init__(self):
         super(TemperatureDependenceTargetData, self).__init__()
-        self.features = {'fold':None, 'unfold':None}
-        self.exp_rates = {'fold':None, 'unfold':None}
+        self.feature = None
+        self.exp_rates = None
+        self.data_table = None
 
-    def load_data(self, protein_name):
+    def __len__(self):
+        return len(self.feature)
+
+    def load_data(self, protein_name, folding_or_unfolding_data):
         from kinetic_db.arrhenius import arrhenius_dict
         self.name = protein_name
         arrhenius_data = arrhenius_dict[self.name]
         fold_data_file, unfold_data_file, N, avg_ss_length = arrhenius_data
-        fold_data_table = pandas.read_csv(fold_data_file,
+
+        if folding_or_unfolding_data == 'fold':
+            fold_data_table = pandas.read_csv(fold_data_file,
                                           names=('1000/T', 'logk'))
-        fold_data_table['T'] = 1./(fold_data_table['1000/T'] / 1000)
-        fold_data_table['beta'] = 1./(fold_data_table['T'] * boltz_k)
-        unfold_data_table = pandas.read_csv(unfold_data_file,
-                                            names=('1000/T', 'logk'))
-        unfold_data_table['T'] = 1./(unfold_data_table['1000/T'] / 1000)
-        unfold_data_table['beta'] = 1./(unfold_data_table['T'] * boltz_k)
-        self.features = {'fold':numpy.array(fold_data_table['beta'], numpy.float32),
-                         'unfold':numpy.array(unfold_data_table['beta'], numpy.float32)}
-        self.exp_rates = {'fold':numpy.array(fold_data_table['logk'], numpy.float32),
-                          'unfold':numpy.array(unfold_data_table['logk'], numpy.float32)}
+            fold_data_table['T'] = 1./(fold_data_table['1000/T'] / 1000)
+            fold_data_table['beta'] = 1./(fold_data_table['T'] * boltz_k)
+            self.feature = numpy.array(fold_data_table['beta'], numpy.float32)
+            self.exp_rates = numpy.array(fold_data_table['logk'], numpy.float32)
+            self.data_table = fold_data_table
+        elif folding_or_unfolding_data == 'unfold':
+            unfold_data_table = pandas.read_csv(unfold_data_file,
+                                                names=('1000/T', 'logk'))
+            unfold_data_table['T'] = 1./(unfold_data_table['1000/T'] / 1000)
+            unfold_data_table['beta'] = 1./(unfold_data_table['T'] * boltz_k)
+            self.feature = numpy.array(unfold_data_table['beta'], numpy.float32)
+            self.exp_rates = numpy.array(unfold_data_table['logk'], numpy.float32)
+            self.data_table = unfold_data_table
+        else:
+            print "Unknown data set", folding_or_unfolding_data
+
         return
 
     def get_feature(self):
-        return self.features
+        return self.feature
 
     def get_target(self):
         return self.exp_rates
 
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)
-        my_clone.features['fold'] = my_clone.features['fold'][inds]
-        my_clone.features['unfold'] = my_clone.features['unfold'][inds]
-        my_clone.exp_rates['fold'] = my_clone.exp_rates['fold'][inds]
-        my_clone.exp_rates['unfold'] = my_clone.exp_rates['unfold'][inds]
+        my_clone.feature = my_clone.feature[inds]
+        my_clone.exp_rates = my_clone.exp_rates[inds]
         return my_clone
 
     def to_data_frame(self):
-        d = {'logkf':self.exp_rates[0], 'logku':self.exp_rates[1],
-             'beta_kf':self.feature[0], 'beta_ku':self.feature[1]}
-        df = pandas.DataFrame(d)
-        return df
+        return self.data_table
