@@ -77,7 +77,7 @@ class ContactOrderCollectionPredictor(DataPredictor):
         self.element_predictor = element_predictor()
         self.prediction_factory = ContactOrderCollectionPrediction
 
-    def predict_data(self, model_collection, feature_array):
+    def predict_data(self, model_collection):
         prediction_collection = self.prediction_factory()
         for this_element in model_collection:
             element_prediction = self.element_predictor.predict_data(this_element)

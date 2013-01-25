@@ -7,7 +7,7 @@ from foldkin.coop.coop_model_parameter_set import CoopModelParameterSet
 def ModelHasCorrectNumberOfStatesAndRoutes():
     parameter_set = CoopModelParameterSet()
     model_factory = CoopModelFactory()
-    model = model_factory.create_model(parameter_set)
+    model = model_factory.create_model('', parameter_set)
     num_states = model.get_num_states()
     N = parameter_set.get_parameter('N')
     expected_num_states = N + 1
@@ -28,7 +28,7 @@ def ModelHasCorrectNumberOfStatesAndRoutes():
 def ModelParametersAreAccessible():
     parameter_set = CoopModelParameterSet()
     model_factory = CoopModelFactory()
-    model = model_factory.create_model(parameter_set)
+    model = model_factory.create_model('', parameter_set)
     N_from_model = model.get_parameter('N')
     true_N = parameter_set.get_parameter('N')
     nose.tools.eq_(N_from_model, true_N,

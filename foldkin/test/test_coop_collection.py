@@ -2,7 +2,8 @@ import numpy
 import nose.tools
 from foldkin.coop.coop_model_parameter_set import CoopModelParameterSet
 from foldkin.coop.coop_collection import CoopCollectionFactory
-from foldkin.fold_rate_predictor import FoldRateCollectionPredictor
+from foldkin.fold_rate_predictor import FoldRateCollectionPredictor,\
+                                        FoldRatePredictor
 
 epsilon = 0.1
 
@@ -11,12 +12,12 @@ def ModelHasCorrectNumberOfStatesAndRoutes():
     parameter_set = CoopModelParameterSet()
     parameter_array = numpy.array([-2.0, 0.3, 6.0, 5.6, 3])
     parameter_set.update_from_array(parameter_array)
-    model_factory = CoopCollectionFactory('N', range(1,31))
+    N_range = range(1,31)
+    model_factory = CoopCollectionFactory(N_range, 'N', N_range)
     model_collection = model_factory.create_model(parameter_set)
-    for this_N, this_model in model_collection:
+    for this_model in model_collection:
         num_states = this_model.get_num_states()
         N = this_model.get_parameter('N')
-        nose.tools.eq_(this_N, N, "%d %d" % (this_N, N))
         expected_num_states = N + 1
         error_message = "Got model with %d states, " \
                          "expected model with %d states." % \
@@ -45,14 +46,14 @@ def ModelPredictsSameRatesAsPreviousCode():
     parameter_array = numpy.array([-2.0, 0.5, 7.0, 5.6, 3])
     parameter_set.update_from_array(parameter_array)
     N_range = range(1,31)
-    model_factory = CoopCollectionFactory('N', N_range)
+    model_factory = CoopCollectionFactory(N_range, 'N', N_range)
     model_collection = model_factory.create_model(parameter_set)
     N_array = numpy.array(N_range)
-    data_predictor = FoldRateCollectionPredictor()
-    prediction = data_predictor.predict_data(model_collection, N_array)
-    for this_N, this_logkf in zip(N_range, prediction):
-        logkf_from_previous_code = previous_logkf_dict[this_N]
+    data_predictor = FoldRateCollectionPredictor(FoldRatePredictor)
+    prediction = data_predictor.predict_data(model_collection)
+    for id_str, this_logkf in prediction:
+        logkf_from_previous_code = previous_logkf_dict[id_str]
         error_message = "Expected %.2e, got %.2e for %d" % (logkf_from_previous_code,
-                                                            this_logkf, this_N)
+                                                            this_logkf, id_str)
         delta_logkf = this_logkf - logkf_from_previous_code
         nose.tools.ok_(abs(delta_logkf) < epsilon, error_message)

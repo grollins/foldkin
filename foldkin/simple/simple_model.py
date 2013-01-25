@@ -76,6 +76,9 @@ class SimpleParameterSet(foldkin.base.parameter_set.ParameterSet):
         """Array format: [x]"""
         return numpy.array([self.x,])
 
+    def as_array_for_scipy_optimizer(self):
+        return self.as_array()
+
     def update_from_array(self, parameter_array):
         self.set_parameter('x', numpy.atleast_1d(parameter_array)[0])
 

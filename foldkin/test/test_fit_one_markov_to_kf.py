@@ -3,8 +3,9 @@ from foldkin.scipy_optimizer import ScipyOptimizer
 from foldkin.coop.coop_model import CoopModelFactory
 from foldkin.coop.coop_model_parameter_set import CoopModelParameterSet
 from foldkin.fold_rate_judge import FoldRateJudge
-from foldkin.fold_rate_predictor import SingleFoldRatePredictor
 from foldkin.fold_rate_target_data import SingleFoldRateTargetData
+from foldkin.fold_rate_predictor import FoldRateCollectionPredictor,\
+                                        FoldRatePredictor
 from foldkin.file_archiver import FileArchiver
 
 EPSILON = 0.1
@@ -15,7 +16,7 @@ class TestFitOneFoldRate(object):
                        judge, data_predictor, target_data):
         def f(current_parameter_array):
             parameter_set.update_from_array(current_parameter_array)
-            current_model = model_factory.create_model(parameter_set)
+            current_model = model_factory.create_model('', parameter_set)
             score, prediction = judge.judge_prediction(current_model,
                                                        data_predictor,
                                                        target_data)
@@ -32,7 +33,7 @@ class TestFitOneFoldRate(object):
         initial_parameters.set_parameter('N', 3)
         initial_parameters.set_parameter_bounds('log_k1', 5.5, 5.7)
         judge = FoldRateJudge()
-        data_predictor = SingleFoldRatePredictor()
+        data_predictor = FoldRatePredictor()
         target_data = SingleFoldRateTargetData()
         target_data.load_data('a3D')
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,
@@ -40,7 +41,7 @@ class TestFitOneFoldRate(object):
         optimizer = ScipyOptimizer()
         results = optimizer.optimize_parameters(score_fcn, initial_parameters)
         new_params, score, num_iterations = results
-        optimized_model = model_factory.create_model(new_params)
+        optimized_model = model_factory.create_model('', new_params)
         score, prediction = judge.judge_prediction(optimized_model, data_predictor,
                                                    target_data)
         true_logkf = target_data.get_target()[0]

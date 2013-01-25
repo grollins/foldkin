@@ -78,6 +78,9 @@ class KingsFeatureParameterSet(foldkin.base.parameter_set.ParameterSet):
         c = self.parameter_dict['c']
         return numpy.array([a, b, c])
 
+    def as_array_for_scipy_optimizer(self):
+        return self.as_array()
+
     def update_from_array(self, parameter_array):
         parameter_array = numpy.atleast_1d(parameter_array)
         self.set_parameter('a', parameter_array[0])

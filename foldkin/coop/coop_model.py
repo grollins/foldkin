@@ -1,22 +1,18 @@
 import numpy
-import scipy.misc
+from foldkin.util import n_choose_k
 from foldkin.base.model_factory import ModelFactory
 from foldkin.markov_state_model import State, Route, MarkovStateModel
-
-def n_choose_k(n,k):
-    assert n > 0, "%d %d" % (n, k)
-    return scipy.misc.comb(n, k)
 
 class CoopModelFactory(ModelFactory):
     """docstring for CoopModelFactory"""
     def __init__(self):
         super(CoopModelFactory, self).__init__()
 
-    def create_model(self, parameter_set):
+    def create_model(self, id_str, parameter_set):
         self.parameter_set = parameter_set
         state_enumerator = self.state_enumerator_factory()
         route_mapper = self.route_mapper_factory()
-        new_model = CoopModel(state_enumerator, route_mapper,
+        new_model = CoopModel(id_str, state_enumerator, route_mapper,
                               self.parameter_set, noisy=False)
         C_array = numpy.zeros( [len(new_model)] )
         for i,s in enumerate(new_model.states):
@@ -115,10 +111,11 @@ class CoopModelFactory(ModelFactory):
 class CoopState(State):
     def __init__(self, id_str, C):
         super(CoopState, self).__init__(id_str)
+        self.id_str = id_str
         self.C = C
         self.is_first_excited_state = False
     def __str__(self):
-        return "%s %d %s %s %s" % (self.id, self.C, self.is_folded_state,
+        return "%s %d %s %s %s" % (self.id_str, self.C, self.is_folded_state,
                                    self.is_unfolded_state, self.is_first_excited_state)
 
     def compute_boltz_weight(self, N, K, alpha, folded_weight):
@@ -149,10 +146,10 @@ class CoopState(State):
         return this_bf
 
 class CoopModel(MarkovStateModel):
-    def __init__(self, state_enumerator, route_mapper, parameter_set, noisy=False):
-        super(CoopModel, self).__init__(state_enumerator, route_mapper,
+    def __init__(self, id_str, state_enumerator, route_mapper, parameter_set,
+                 noisy=False):
+        super(CoopModel, self).__init__(id_str, state_enumerator, route_mapper,
                                            parameter_set, noisy)
-
     def get_num_states(self):
         return len(self.states)
 

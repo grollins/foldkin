@@ -10,7 +10,10 @@ class ContactOrderParameterSet(ParameterSet):
                             'gamma':(None, None)}
 
     def set_parameter(self, param_name, param_value):
-        self.parameter_dict[param_name] = param_value
+        if param_name in self.parameter_dict.keys():
+            self.parameter_dict[param_name] = param_value
+        else:
+            assert False, "No such parameter: %s" % param_name
 
     def get_parameter(self, param_name):
         return self.parameter_dict[param_name]
@@ -19,6 +22,9 @@ class ContactOrderParameterSet(ParameterSet):
         logk0 = self.get_parameter('logk0')
         gamma = self.get_parameter('gamma')
         return numpy.array([logk0, gamma])
+
+    def as_array_for_scipy_optimizer(self):
+        return self.as_array()
 
     def update_from_array(self, parameter_array):
         """Expected order of parameters in array:

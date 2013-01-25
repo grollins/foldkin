@@ -22,9 +22,10 @@ class Route(object):
         return my_str
 
 class MarkovStateModel(base.model.Model):
-    def __init__(self, state_enumerator, route_mapper, parameter_set,
+    def __init__(self, id_str, state_enumerator, route_mapper, parameter_set,
                  noisy=False):
         super(MarkovStateModel, self).__init__()
+        self.id_str = id_str
         self.states = state_enumerator()
         if route_mapper is None:
             self.routes = None
@@ -57,6 +58,9 @@ class MarkovStateModel(base.model.Model):
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)
+
+    def get_id(self):
+        return self.id_str
 
     def compute_partition_fcn(self, beta):
         boltzmann_factor_array = self.compute_boltzmann_factors(beta)

@@ -1,15 +1,15 @@
 import numpy
-import base.data_predictor
-from foldkin.fold_rate_prediction import SingleFoldRatePrediction,\
+from base.data_predictor import DataPredictor
+from foldkin.fold_rate_prediction import FoldRatePrediction,\
                                          FoldRateCollectionPrediction
 
-class SingleFoldRatePredictor(base.data_predictor.DataPredictor):
+class FoldRatePredictor(DataPredictor):
     """docstring for FoldRatePredictor"""
     def __init__(self):
-        super(SingleFoldRatePredictor, self).__init__()
-        self.prediction_factory = SingleFoldRatePrediction
+        super(FoldRatePredictor, self).__init__()
+        self.prediction_factory = FoldRatePrediction
 
-    def predict_data(self, model, feature):
+    def predict_data(self, model, feature=None):
         log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         Q = boltzmann_factor_array.sum()
@@ -21,19 +21,33 @@ class SingleFoldRatePredictor(base.data_predictor.DataPredictor):
         return self.prediction_factory(log_fold_rate)
 
 
-class FoldRateCollectionPredictor(base.data_predictor.DataPredictor):
-    """docstring for FoldRateCollectionPredictor"""
+class UnfoldRatePredictor(DataPredictor):
+    """docstring for UnfoldRatePredictor"""
     def __init__(self):
+        super(UnfoldRatePredictor, self).__init__()
+        self.prediction_factory = FoldRatePrediction
+
+    def predict_data(self, model, feature=None):
+        log_k1 = model.get_parameter('log_k1')
+        boltzmann_factor_array = model.compute_boltzmann_factors()
+        folded_weight = boltzmann_factor_array[model.folded_index]
+        first_excited_weight = boltzmann_factor_array[model.first_excited_index]
+        log_unfold_rate = log_k1 + numpy.log10(first_excited_weight / folded_weight)
+        return self.prediction_factory(log_unfold_rate)
+
+
+class FoldRateCollectionPredictor(DataPredictor):
+    """docstring for FoldRateCollectionPredictor"""
+    def __init__(self, element_predictor):
         super(FoldRateCollectionPredictor, self).__init__()
-        self.single_rate_predictor = SingleFoldRatePredictor()
+        self.element_predictor = element_predictor()
         self.prediction_factory = FoldRateCollectionPrediction
 
-    def predict_data(self, model, feature):
+    def predict_data(self, model_collection):
         prediction_collection = self.prediction_factory()
-        for this_value in feature:
-            fold_rate_model = model.get_element(this_value)
-            if fold_rate_model:
-                element_prediction = self.single_rate_predictor.predict_data(fold_rate_model,
-                                                        numpy.array(this_value))
-                prediction_collection.add_prediction(element_prediction)
+        for this_element in model_collection:
+            element_prediction = self.element_predictor.predict_data(this_element)
+            prediction_collection.add_prediction(this_element.get_id(),
+                                                 element_prediction)
         return prediction_collection
+

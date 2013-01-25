@@ -31,7 +31,7 @@ def UniformWeightPredictionMatchesTypicalACOPrediction():
     coc_model = coc_factory.create_model(mock_parameter_set)
 
     predictor = ContactOrderCollectionPredictor(UniformWeightAcoPredictor)
-    prediction_collection = predictor.predict_data(coc_model, None)
+    prediction_collection = predictor.predict_data(coc_model)
     predicted_logkf = prediction_collection.as_array()
 
     aco_list = []

@@ -13,7 +13,7 @@ class ParameterSet(object):
         return
 
     @abc.abstractmethod
-    def as_array(self):
+    def as_array_for_scipy_optimizer(self):
         return
 
     @abc.abstractmethod

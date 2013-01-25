@@ -13,7 +13,8 @@ class ScipyOptimizer(base.parameter_optimizer.ParameterOptimizer):
 
     def optimize_parameters(self, score_fcn, parameter_set):
         bounds = parameter_set.get_parameter_bounds()
-        results = self.optimization_fcn(score_fcn, x0=parameter_set.as_array(),
+        parameter_array = parameter_set.as_array_for_scipy_optimizer()
+        results = self.optimization_fcn(score_fcn, x0=parameter_array,
                                         bounds=bounds, approx_grad=1,
                                         factr=self.factr, pgtol=self.pgtol,
                                         epsilon=self.epsilon, maxfun=self.maxfun)

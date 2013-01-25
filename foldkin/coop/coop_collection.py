@@ -9,46 +9,47 @@ def clone(ps):
 
 class CoopCollectionFactory(ModelFactory):
     """docstring for CoopCollectionFactory"""
-    def __init__(self, parameter_name, parameter_values):
+    def __init__(self, id_list, parameter_name, parameter_values):
         super(CoopCollectionFactory, self).__init__()
-        assert parameter_name is 'N'
+        assert parameter_name in ['N', 'beta']
+        self.id_list = id_list
         self.parameter_name = parameter_name
         self.parameter_values = parameter_values
-        self.coop_model_factory = CoopModelFactory()
+        self.element_model_factory = CoopModelFactory()
 
     def create_model(self, parameter_set):
-        coop_collection = CoopCollection(parameter_set)
-        for this_parameter_value in self.parameter_values:
+        new_collection = CoopCollection(parameter_set)
+        for this_id, this_param_value in zip(self.id_list, self.parameter_values):
             parameter_set_clone = clone(parameter_set)
             parameter_set_clone.set_parameter(self.parameter_name,
-                                              this_parameter_value)
-            this_coop_model = self.coop_model_factory.create_model(parameter_set_clone)
-            coop_collection.add_element(this_parameter_value, this_coop_model)
-        return coop_collection
+                                              this_param_value)
+            this_model = self.element_model_factory.create_model(this_id,
+                                                            parameter_set_clone)
+            new_collection.add_element(this_model)
+        return new_collection
 
 
-class CoopCollection(Model):
+class CoopCollection(object):
     """docstring for CoopCollection"""
     def __init__(self, parameter_set):
         super(CoopCollection, self).__init__()
         self.parameter_set = parameter_set
-        self.collection = {}
+        self.collection = []
 
     def __iter__(self):
-        for key, element in self.collection.iteritems():
-            yield key, element
+        for element in self.collection:
+            yield element
 
-    def add_element(self, parameter_value, element):
-        if self.collection.has_key(parameter_value):
-            return
-        else:
-            self.collection[parameter_value] = element
+    def add_element(self, element):
+        self.collection.append(element)
 
-    def get_element(self, parameter_value):
-        if self.collection.has_key(parameter_value):
-            return self.collection[parameter_value]
-        else:
-            return None
+    def get_element(self, id_string):
+        found_element = None
+        for element in self.collection:
+            if element.get_id() == id_string:
+                found_element = element
+                break
+        return found_element
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)
