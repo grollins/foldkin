@@ -40,11 +40,11 @@ class CoopModelFactory(ModelFactory):
 
     def kf_factory(self, C):
         N = self.parameter_set.get_parameter('N')
-        log_k1 = self.parameter_set.get_parameter('log_k1')
-        k1 = 10**log_k1
+        log_k0 = self.parameter_set.get_parameter('log_k0')
+        k0 = 10**log_k0
         def kf_fcn(t):
             S = N - C
-            kf = S * k1
+            kf = S * k0
             return kf
         return kf_fcn
 
@@ -61,13 +61,12 @@ class CoopModelFactory(ModelFactory):
 
     def route_mapper_factory(self):
         N = self.parameter_set.get_parameter('N')
-        log_K = self.parameter_set.get_parameter('log_K')
-        log_alpha = self.parameter_set.get_parameter('log_alpha')
-        log_epsilon = self.parameter_set.get_parameter('log_epsilon')
-        K = 10**log_K
-        alpha = 10**log_alpha
-        epsilon = 10**log_epsilon
-        folded_weight = epsilon
+        log_K_ss = self.parameter_set.get_parameter('log_K_ss')
+        log_K_ter = self.parameter_set.get_parameter('log_K_ter')
+        log_K_f = self.parameter_set.get_parameter('log_K_f')
+        K_ss = 10**log_K_ss
+        K_ter = 10**log_K_ter
+        K_f = 10**log_K_f
 
         def map_routes(states):
             route_list = []
@@ -86,7 +85,8 @@ class CoopModelFactory(ModelFactory):
                         u_state = s1
                     else:
                         assert False, "Logic Error"
-                    assert (f_state.C - u_state.C) > 0, "\n%s\n%s" % (str(u_state), str(f_state))
+                    error_msg = "\n%s\n%s" % (str(u_state), str(f_state))
+                    assert (f_state.C - u_state.C) > 0, error_msg
                     # are these states neighbors?
                     if self.connected_states(u_state, f_state):
                         # build a route between these states
@@ -96,8 +96,8 @@ class CoopModelFactory(ModelFactory):
                                                         kf, direction="folding")
                         route_list.append(fold_route)
                         # unfolding route
-                        f_bf = f_state.compute_boltz_weight(N, K, alpha, folded_weight)
-                        u_bf = u_state.compute_boltz_weight(N, K, alpha, folded_weight)
+                        f_bf = f_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
+                        u_bf = u_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
                         ku = self.ku_factory(kf(0.0), f_bf, u_bf)
                         unfold_route = Route(f_state.id, u_state.id,
                                              ku, direction="unfolding")
@@ -118,13 +118,13 @@ class CoopState(State):
         return "%s %d %s %s %s" % (self.id_str, self.C, self.is_folded_state,
                                    self.is_unfolded_state, self.is_first_excited_state)
 
-    def compute_boltz_weight(self, N, K, alpha, folded_weight):
+    def compute_boltz_weight(self, N, K_ss, K_ter, K_f):
         if self.is_unfolded_state:
-            this_bf = n_choose_k(N, self.C) * K**self.C
+            this_bf = n_choose_k(N, self.C) * K_ss**self.C
         elif self.is_folded_state:
-            this_bf = n_choose_k(N, self.C) * K**self.C * folded_weight
+            this_bf = n_choose_k(N, self.C) * K_ss**self.C * K_f
         else:
-            this_bf = n_choose_k(N, self.C) * K**self.C
+            this_bf = n_choose_k(N, self.C) * K_ss**self.C
 
         if self.C < 2:
             exponent = 0
@@ -141,8 +141,8 @@ class CoopState(State):
         elif self.C > 6:
             exponent = 4 * self.C - 10
 
-        this_alpha = alpha ** exponent
-        this_bf *= this_alpha
+        this_K_ter = K_ter ** exponent
+        this_bf *= this_K_ter
         return this_bf
 
 class CoopModel(MarkovStateModel):
@@ -158,15 +158,14 @@ class CoopModel(MarkovStateModel):
 
     def compute_boltzmann_factors(self):
         N = self.get_parameter('N')
-        log_K = self.get_parameter('log_K')
-        log_alpha = self.get_parameter('log_alpha')
-        log_epsilon = self.get_parameter('log_epsilon')
-        K = 10**log_K
-        alpha = 10**log_alpha
-        epsilon = 10**log_epsilon
-        folded_weight = epsilon
+        log_K_ss = self.get_parameter('log_K_ss')
+        log_K_ter = self.get_parameter('log_K_ter')
+        log_K_f = self.get_parameter('log_K_f')
+        K_ss = 10**log_K_ss
+        K_ter = 10**log_K_ter
+        K_f = 10**log_K_f
         boltzmann_factor_list = []
         for this_state in self.states:
-            this_bf = this_state.compute_boltz_weight(N, K, alpha, folded_weight)
+            this_bf = this_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
             boltzmann_factor_list.append(this_bf)
         return numpy.array(boltzmann_factor_list)

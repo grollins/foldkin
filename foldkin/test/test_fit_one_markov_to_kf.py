@@ -31,7 +31,7 @@ class TestFitOneFoldRate(object):
         model_factory = CoopModelFactory()
         initial_parameters = CoopModelParameterSet()
         initial_parameters.set_parameter('N', 3)
-        initial_parameters.set_parameter_bounds('log_k1', 5.5, 5.7)
+        initial_parameters.set_parameter_bounds('log_k0', 5.5, 5.7)
         judge = FoldRateJudge()
         data_predictor = FoldRatePredictor()
         target_data = SingleFoldRateTargetData()

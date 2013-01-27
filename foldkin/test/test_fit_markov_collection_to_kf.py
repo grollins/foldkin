@@ -34,7 +34,7 @@ class TestFitManyFoldRates(object):
         id_list = range(len(feature_range))
         model_factory = CoopCollectionFactory(id_list, 'N', feature_range)
         initial_parameters = CoopModelParameterSet()
-        initial_parameters.set_parameter_bounds('log_k1', 5.5, 5.7)
+        initial_parameters.set_parameter_bounds('log_k0', 5.5, 5.7)
         judge = CoopCollectionJudge()
         data_predictor = FoldRateCollectionPredictor(FoldRatePredictor)
         score_fcn = self.make_score_fcn(model_factory, initial_parameters,

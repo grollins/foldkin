@@ -10,14 +10,14 @@ class FoldRatePredictor(DataPredictor):
         self.prediction_factory = FoldRatePrediction
 
     def predict_data(self, model, feature=None):
-        log_k1 = model.get_parameter('log_k1')
+        log_k0 = model.get_parameter('log_k0')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         Q = boltzmann_factor_array.sum()
         inds = range(len(boltzmann_factor_array))
         inds.remove(model.folded_index)
         Q_0 = boltzmann_factor_array[inds].sum()
         P1_eq = boltzmann_factor_array[model.first_excited_index]
-        log_fold_rate = log_k1 + numpy.log10(P1_eq / Q_0)
+        log_fold_rate = log_k0 + numpy.log10(P1_eq / Q_0)
         return self.prediction_factory(log_fold_rate)
 
 
@@ -28,11 +28,11 @@ class UnfoldRatePredictor(DataPredictor):
         self.prediction_factory = FoldRatePrediction
 
     def predict_data(self, model, feature=None):
-        log_k1 = model.get_parameter('log_k1')
+        log_k0 = model.get_parameter('log_k0')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         folded_weight = boltzmann_factor_array[model.folded_index]
         first_excited_weight = boltzmann_factor_array[model.first_excited_index]
-        log_unfold_rate = log_k1 + numpy.log10(first_excited_weight / folded_weight)
+        log_unfold_rate = log_k0 + numpy.log10(first_excited_weight / folded_weight)
         return self.prediction_factory(log_unfold_rate)
 
 

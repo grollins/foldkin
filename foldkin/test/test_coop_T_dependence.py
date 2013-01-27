@@ -75,7 +75,7 @@ class TestFitOneTemperatureDependence(object):
                                                      unfold_beta_array)
         initial_parameters = TemperatureDependenceParameterSet()
         initial_parameters.set_parameter('N', 3)
-        initial_parameters.set_parameter_bounds('log_k1', 4.0, 7.0)
+        initial_parameters.set_parameter_bounds('log_k0', 4.0, 7.0)
         judge = TemperatureDependenceJudge()
         fold_data_predictor = FoldRateCollectionPredictor(FoldRatePredictor)
         unfold_data_predictor = FoldRateCollectionPredictor(UnfoldRatePredictor)
