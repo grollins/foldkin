@@ -2,6 +2,7 @@ import numpy
 from base.data_predictor import DataPredictor
 from foldkin.fold_rate_prediction import FoldRatePrediction,\
                                          FoldRateCollectionPrediction
+from foldkin.util import ALMOST_ZERO
 
 class FoldRatePredictor(DataPredictor):
     """docstring for FoldRatePredictor"""
@@ -10,14 +11,16 @@ class FoldRatePredictor(DataPredictor):
         self.prediction_factory = FoldRatePrediction
 
     def predict_data(self, model, feature=None):
-        log_k0 = model.get_parameter('log_k0')
+        log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         Q = boltzmann_factor_array.sum()
         inds = range(len(boltzmann_factor_array))
         inds.remove(model.folded_index)
         Q_0 = boltzmann_factor_array[inds].sum()
         P1_eq = boltzmann_factor_array[model.first_excited_index]
-        log_fold_rate = log_k0 + numpy.log10(P1_eq / Q_0)
+        if P1_eq < ALMOST_ZERO:
+            P1_eq = ALMOST_ZERO
+        log_fold_rate = log_k1 + numpy.log10(P1_eq / Q_0)
         return self.prediction_factory(log_fold_rate)
 
 
@@ -28,11 +31,15 @@ class UnfoldRatePredictor(DataPredictor):
         self.prediction_factory = FoldRatePrediction
 
     def predict_data(self, model, feature=None):
-        log_k0 = model.get_parameter('log_k0')
+        log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         folded_weight = boltzmann_factor_array[model.folded_index]
         first_excited_weight = boltzmann_factor_array[model.first_excited_index]
-        log_unfold_rate = log_k0 + numpy.log10(first_excited_weight / folded_weight)
+        if first_excited_weight < ALMOST_ZERO:
+            first_excited_weight = ALMOST_ZERO
+        if folded_weight < ALMOST_ZERO:
+            folded_weight = ALMOST_ZERO
+        log_unfold_rate = log_k1 + numpy.log10(first_excited_weight / folded_weight)
         return self.prediction_factory(log_unfold_rate)
 
 

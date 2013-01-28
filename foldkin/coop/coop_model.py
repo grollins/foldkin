@@ -40,11 +40,11 @@ class CoopModelFactory(ModelFactory):
 
     def kf_factory(self, C):
         N = self.parameter_set.get_parameter('N')
-        log_k0 = self.parameter_set.get_parameter('log_k0')
-        k0 = 10**log_k0
+        log_k1 = self.parameter_set.get_parameter('log_k1')
+        k1 = 10**log_k1
         def kf_fcn(t):
             S = N - C
-            kf = S * k0
+            kf = S * k1
             return kf
         return kf_fcn
 

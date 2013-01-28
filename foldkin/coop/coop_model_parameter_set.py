@@ -30,7 +30,10 @@ class CoopModelParameterSet(ParameterSet):
             assert False, "No such parameter: %s" % param_name
 
     def get_parameter(self, param_name):
-        return self.parameter_dict[param_name]
+        if param_name == 'log_k1':
+            return self.parameter_dict['log_k0']
+        else:
+            return self.parameter_dict[param_name]
 
     def as_array(self):
         log_K_ss = self.get_parameter('log_K_ss')
@@ -78,13 +81,14 @@ class TemperatureDependenceParameterSet(ParameterSet):
         super(TemperatureDependenceParameterSet, self).__init__()
         self.parameter_dict = {'N':5, 'H_ss':0.0, 'H_ter':-0.5,
                                'S_ss':-1e-2, 'S_ter':-1e-2,
-                               'G_f':-1.5, 'log_k0':5.0,
+                               'G_f':-1.5, 'G_act':0.0, 'log_k0':5.0,
                                'beta':1./(0.002*300)}
         self.bounds_dict = {'H_ss':(None, None),
                             'H_ter':(None, None),
                             'S_ss':(None, None),
                             'S_ter':(None, None),
                             'G_f':(None, None),
+                            'G_act':(None, None),
                             'log_k0':(None, None),
                             'beta':(None, None)}
 
@@ -103,16 +107,26 @@ class TemperatureDependenceParameterSet(ParameterSet):
             assert False, "No such parameter: %s" % param_name
 
     def get_parameter(self, param_name):
-        if param_name in self.parameter_dict.keys():
-            return self.parameter_dict[param_name]
+        if param_name == 'log_k1':
+            return self.compute_log_k1()
         elif param_name == 'log_K_ss':
             return self.compute_log_K_ss()
         elif param_name == 'log_K_ter':
             return self.compute_log_K_ter()
         elif param_name == 'log_K_f':
             return self.compute_log_K_f()
+        elif param_name in self.parameter_dict.keys():
+            return self.parameter_dict[param_name]
         else:
             assert False, "No such parameter: %s" % param_name
+
+    def compute_log_k1(self):
+        log_k0 = self.parameter_dict['log_k0']
+        G_act = self.parameter_dict['G_act']
+        beta = self.parameter_dict['beta']
+        k0 = 10**log_k0
+        k1 = k0 * numpy.exp(-G_act * beta)
+        return numpy.log10(k1)
 
     def compute_log_K_ss(self):
         H_ss = self.parameter_dict['H_ss']
@@ -142,10 +156,11 @@ class TemperatureDependenceParameterSet(ParameterSet):
         S_ss = self.get_parameter('S_ss')
         S_ter = self.get_parameter('S_ter')
         G_f = self.get_parameter('G_f')
+        G_act = self.get_parameter('G_act')
         log_k0 = self.get_parameter('log_k0')
         beta = self.get_parameter('beta')
         N = self.get_parameter('N')
-        return numpy.array([H_ss, H_ter, S_ss, S_ter, G_f,
+        return numpy.array([H_ss, H_ter, S_ss, S_ter, G_f, G_act,
                             log_k0, beta, N])
 
     def as_array_for_scipy_optimizer(self):
@@ -154,12 +169,14 @@ class TemperatureDependenceParameterSet(ParameterSet):
         S_ss = self.get_parameter('S_ss')
         S_ter = self.get_parameter('S_ter')
         G_f = self.get_parameter('G_f')
+        G_act = self.get_parameter('G_act')
         log_k0 = self.get_parameter('log_k0')
-        return numpy.array([H_ss, H_ter, S_ss, S_ter, G_f, log_k0])
+        return numpy.array([H_ss, H_ter, S_ss, S_ter, G_f, G_act,
+                            log_k0])
 
     def update_from_array(self, parameter_array):
         """Expected order of parameters in array:
-           H_ss, H_ter, S_ss, S_ter, G_f, log_k0
+           H_ss, H_ter, S_ss, S_ter, G_f, G_act, log_k0
            N and beta will not be set this way
         """
         parameter_array = numpy.atleast_1d(parameter_array)
@@ -168,7 +185,8 @@ class TemperatureDependenceParameterSet(ParameterSet):
         self.set_parameter('S_ss', parameter_array[2])
         self.set_parameter('S_ter', parameter_array[3])
         self.set_parameter('G_f', parameter_array[4])
-        self.set_parameter('log_k0', parameter_array[5])
+        self.set_parameter('G_act', parameter_array[5])
+        self.set_parameter('log_k0', parameter_array[6])
 
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
@@ -180,9 +198,10 @@ class TemperatureDependenceParameterSet(ParameterSet):
         S_ss_bounds = self.bounds_dict['S_ss']
         S_ter_bounds = self.bounds_dict['S_ter']
         G_f_bounds = self.bounds_dict['G_f']
+        G_act_bounds = self.bounds_dict['G_act']
         log_k0_bounds = self.bounds_dict['log_k0']
         bounds = [H_ss_bounds, H_ter_bounds, S_ss_bounds, S_ter_bounds,
-                  G_f_bounds, log_k0_bounds]
+                  G_f_bounds, G_act_bounds, log_k0_bounds]
         return bounds
 
 

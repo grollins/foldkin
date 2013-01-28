@@ -1,5 +1,7 @@
 import scipy.misc
 
+ALMOST_ZERO = 1e-50
+
 boltz_k = 0.002 # kcal/mol/Kelvin
 
 def n_choose_k(n,k):
