@@ -150,6 +150,9 @@ class CoopModel(MarkovStateModel):
                  noisy=False):
         super(CoopModel, self).__init__(id_str, state_enumerator, route_mapper,
                                            parameter_set, noisy)
+    def get_C_array(self):
+        return self.C_array
+
     def get_num_states(self):
         return len(self.states)
 
