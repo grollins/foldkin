@@ -27,6 +27,7 @@ class FoldRatePredictor(DataPredictor):
         log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
+        boltzmann_factor_array[numpy.isnan(boltzmann_factor_array)] = ALMOST_ZERO
         Q = boltzmann_factor_array.sum()
         inds = range(len(boltzmann_factor_array))
         inds.remove(model.folded_index)
@@ -59,6 +60,7 @@ class UnfoldRatePredictor(DataPredictor):
         log_k1 = model.get_parameter('log_k1')
         boltzmann_factor_array = model.compute_boltzmann_factors()
         boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
+        boltzmann_factor_array[numpy.isnan(boltzmann_factor_array)] = ALMOST_ZERO
         folded_weight = boltzmann_factor_array[model.folded_index]
         first_excited_weight = boltzmann_factor_array[model.first_excited_index]
         if first_excited_weight < ALMOST_ZERO:
