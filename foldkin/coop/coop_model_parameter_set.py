@@ -486,7 +486,7 @@ class FixedK_SS_TempDependenceParameterSet(ParameterSet):
         G_f = self.get_parameter('G_f')
         G_act = self.get_parameter('G_act')
         log_k0 = self.get_parameter('log_k0')
-        return numpy.array([H_ss, H_ter, G_f, G_act, log_k0])
+        return numpy.array([H_ss, H_ter, S_ter, G_f, G_act, log_k0])
 
     def update_from_array(self, parameter_array):
         """Expected order of parameters in array:
@@ -526,7 +526,8 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
                                'S_ss':-1e-2, 'S_ter':-1e-2,
                                'G_f':-1.5, 'G_act':0.0, 'log_k0':5.0,
                                'beta':1./(0.002*300)}
-        self.bounds_dict = {'H_ss':(None, None),
+        self.bounds_dict = {'log_K_ter':(None, None),
+                            'H_ss':(None, None),
                             'S_ss':(None, None),
                             'H_ter':(None, None),
                             'G_f':(None, None),
@@ -550,6 +551,9 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
         if param_name == 'H_ter':
             self.parameter_dict['H_ter'] = param_value
             self.parameter_dict['S_ter'] = self.compute_S_ter()
+        elif param_name == 'log_K_ter':
+            self.parameter_dict['log_K_ter'] = param_value
+            self.parameter_dict['S_ter'] = self.compute_S_ter()
         elif param_name == 'S_ter':
             print "Cannot set S values directly."
         elif param_name in self.parameter_dict.keys():
@@ -563,7 +567,8 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
         elif param_name == 'log_K_ss':
             return self.compute_log_K_ss()
         elif param_name == 'log_K_ter':
-            return self.compute_log_K_ter()
+            # return self.compute_log_K_ter()
+            return self.parameter_dict['log_K_ter']
         elif param_name == 'log_K_f':
             return self.compute_log_K_f()
         elif param_name in self.parameter_dict.keys():
@@ -616,6 +621,7 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
         return numpy.log10(K_f)
 
     def as_array(self):
+        log_K_ter = self.get_parameter('log_K_ter')
         H_ss = self.get_parameter('H_ss')
         H_ter = self.get_parameter('H_ter')
         S_ss = self.get_parameter('S_ss')
@@ -625,42 +631,45 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
         log_k0 = self.get_parameter('log_k0')
         beta = self.get_parameter('beta')
         N = self.get_parameter('N')
-        return numpy.array([H_ss, H_ter, S_ss, S_ter, G_f, G_act,
+        return numpy.array([log_K_ter, H_ss, H_ter, S_ss, S_ter, G_f, G_act,
                             log_k0, beta, N])
 
     def as_array_for_scipy_optimizer(self):
+        log_K_ter = self.get_parameter('log_K_ter')
         H_ss = self.get_parameter('H_ss')
         S_ss = self.get_parameter('S_ss')
         H_ter = self.get_parameter('H_ter')
         G_f = self.get_parameter('G_f')
         G_act = self.get_parameter('G_act')
         log_k0 = self.get_parameter('log_k0')
-        return numpy.array([H_ss, H_ter, S_ss, G_f, G_act, log_k0])
+        return numpy.array([log_K_ter, H_ss, H_ter, S_ss, G_f, G_act, log_k0])
 
     def update_from_array(self, parameter_array):
         """Expected order of parameters in array:
-           H_ss, H_ter, S_ss, G_f, G_act, log_k0
+           log_K_ter, H_ss, H_ter, S_ss, G_f, G_act, log_k0
            N and beta will not be set this way
         """
         parameter_array = numpy.atleast_1d(parameter_array)
-        self.set_parameter('H_ss', parameter_array[0])
-        self.set_parameter('H_ter', parameter_array[1])
-        self.set_parameter('S_ss', parameter_array[2])
-        self.set_parameter('G_f', parameter_array[3])
-        self.set_parameter('G_act', parameter_array[4])
-        self.set_parameter('log_k0', parameter_array[5])
+        self.set_parameter('log_K_ter', parameter_array[0])
+        self.set_parameter('H_ss', parameter_array[1])
+        self.set_parameter('H_ter', parameter_array[2])
+        self.set_parameter('S_ss', parameter_array[3])
+        self.set_parameter('G_f', parameter_array[4])
+        self.set_parameter('G_act', parameter_array[5])
+        self.set_parameter('log_k0', parameter_array[6])
 
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
     def get_parameter_bounds(self):
         '''N and beta will not be varied, so no bounds'''
+        log_K_ter_bounds = self.bounds_dict['log_K_ter']
         H_ss_bounds = self.bounds_dict['H_ss']
         H_ter_bounds = self.bounds_dict['H_ter']
         S_ss_bounds = self.bounds_dict['S_ss']
         G_f_bounds = self.bounds_dict['G_f']
         G_act_bounds = self.bounds_dict['G_act']
         log_k0_bounds = self.bounds_dict['log_k0']
-        bounds = [H_ss_bounds, H_ter_bounds, S_ss_bounds,
+        bounds = [log_K_ter_bounds, H_ss_bounds, H_ter_bounds, S_ss_bounds,
                   G_f_bounds, G_act_bounds, log_k0_bounds]
         return bounds

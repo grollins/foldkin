@@ -1,6 +1,7 @@
 import scipy.misc
 
 ALMOST_ZERO = 1e-50
+ALMOST_INF = 1e300
 
 boltz_k = 0.002 # kcal/mol/Kelvin
 

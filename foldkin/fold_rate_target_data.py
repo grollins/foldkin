@@ -144,6 +144,7 @@ class TemperatureDependenceTargetData(TargetData):
         self.name = protein_name
         arrhenius_data = arrhenius_dict[self.name]
         fold_data_file, unfold_data_file, N, avg_ss_length = arrhenius_data
+        self.N = N
 
         if folding_or_unfolding_data == 'fold':
             fold_data_table = pandas.read_csv(fold_data_file,
@@ -171,6 +172,9 @@ class TemperatureDependenceTargetData(TargetData):
 
     def get_target(self):
         return self.exp_rates
+
+    def get_N(self):
+        return self.N
 
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)

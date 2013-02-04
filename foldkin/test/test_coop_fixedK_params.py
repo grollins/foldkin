@@ -120,7 +120,7 @@ def changing_H_ter_automatically_updates_S_ter_to_match_expected_K_ter():
     G_f = -20.
     G_act = 3.0
     log_k0 = 10.
-    param_array = numpy.array([H_ss, H_ter, S_ss, G_f, G_act, log_k0])
+    param_array = numpy.array([log_K_ter, H_ss, H_ter, S_ss, G_f, G_act, log_k0])
     params.update_from_array(param_array)
 
     actual_S_ss = params.get_parameter('S_ss')

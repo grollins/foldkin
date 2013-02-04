@@ -1,5 +1,12 @@
+from numpy import isnan
 from base.judge import Judge
 from sklearn.metrics import mean_squared_error
+
+def print_nan_error_msg(target_array, prediction_array):
+    error_msg = ""
+    for t,p in zip(target_array, prediction_array):
+        error_msg += "%.2e, %.2e\n" % (t, p)
+    return error_msg
 
 class FoldRateJudge(Judge):
     """docstring for FoldRateJudge"""
@@ -59,6 +66,8 @@ class TemperatureDependenceJudge(Judge):
             error_msg = "%s  %s" % (fold_target_array.shape, fold_prediction_array.shape)
             assert fold_target_array.shape == fold_prediction_array.shape, error_msg
             fold_mse = mean_squared_error(fold_target_array, fold_prediction_array)
+            assert not isnan(fold_mse), print_nan_error_msg(fold_target_array,
+                                                            fold_prediction_array)
         else:
             fold_mse = 0.0
             fold_prediction = None
@@ -74,6 +83,8 @@ class TemperatureDependenceJudge(Judge):
             error_msg = "%s  %s" % (unfold_target_array.shape, unfold_prediction_array.shape)
             assert unfold_target_array.shape == unfold_prediction_array.shape, error_msg
             unfold_mse = mean_squared_error(unfold_target_array, unfold_prediction_array)
+            assert not isnan(unfold_mse), print_nan_error_msg(unfold_target_array,
+                                                              unfold_prediction_array)
         else:
             unfold_mse = 0.0
             unfold_prediction = None
