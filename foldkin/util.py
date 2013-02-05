@@ -1,3 +1,4 @@
+import numpy
 import scipy.misc
 
 ALMOST_ZERO = 1e-50
@@ -16,3 +17,9 @@ def convert_beta_to_T(beta):
 def convert_T_to_beta(T):
     beta = 1./(boltz_k * T)
     return beta
+
+def change_lnx_to_log10x(ln_x):
+    return ln_x / numpy.log(10.)
+
+def change_log10x_to_lnx(log10_x):
+    return log10_x / numpy.log10(numpy.e)

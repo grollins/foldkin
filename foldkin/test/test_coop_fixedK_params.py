@@ -43,7 +43,8 @@ def changing_H_automatically_updates_S_to_match_expected_K():
     G_f = -20.
     G_act = 3.0
     log_k0 = 10.
-    param_array = numpy.array([H_ss, H_ter, G_f, G_act, log_k0])
+    param_array = numpy.array([log_K_ss, log_K_ter, H_ss, H_ter, G_f,
+                               G_act, log_k0])
     params.update_from_array(param_array)
 
     actual_S_ss = params.get_parameter('S_ss')

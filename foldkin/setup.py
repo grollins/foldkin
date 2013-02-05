@@ -8,6 +8,7 @@ def configuration(parent_package='', top_path=None):
     config.add_subpackage('one_param_curve')
     config.add_subpackage('simple')
     config.add_subpackage('test')
+    config.add_subpackage('quadratic_curve')
     return config
 
 if __name__ == '__main__':

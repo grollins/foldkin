@@ -59,6 +59,7 @@ class TemperatureDependenceFileArchiver(Archiver):
             target_df['prediction'] = prediction_array
             fold_filename = "fold_%s" % filename
             target_df.to_csv(fold_filename)
+            print "Wrote", fold_filename
         else:
             pass
 
@@ -70,5 +71,6 @@ class TemperatureDependenceFileArchiver(Archiver):
             target_df['prediction'] = prediction_array
             unfold_filename = "unfold_%s" % filename
             target_df.to_csv(unfold_filename)
+            print "Wrote", unfold_filename
         else:
             pass

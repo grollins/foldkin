@@ -176,6 +176,13 @@ class TemperatureDependenceTargetData(TargetData):
     def get_N(self):
         return self.N
 
+    def get_feature_at_max_target(self):
+        ind = numpy.argmax(self.exp_rates)
+        return self.feature[ind]
+
+    def get_max_target(self):
+        return numpy.max(self.exp_rates)
+
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)
         my_clone.feature = my_clone.feature[inds]
