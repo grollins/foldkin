@@ -2,6 +2,18 @@ import numpy
 from foldkin.util import n_choose_k
 from foldkin.base.model_factory import ModelFactory
 from foldkin.markov_state_model import State, Route, MarkovStateModel
+from foldkin.util import ALMOST_INF, ALMOST_ZERO
+
+def compute_lnQd(coop_model):
+    boltzmann_factor_array = coop_model.compute_boltzmann_factors()
+    boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
+    boltzmann_factor_array[numpy.isnan(boltzmann_factor_array)] = ALMOST_ZERO
+    Q = boltzmann_factor_array.sum()
+    inds = range(len(boltzmann_factor_array))
+    inds.remove(coop_model.folded_index)
+    Qd = boltzmann_factor_array[inds].sum()
+    return numpy.log(Qd)
+
 
 class CoopModelFactory(ModelFactory):
     """docstring for CoopModelFactory"""
@@ -150,6 +162,10 @@ class CoopModel(MarkovStateModel):
                  noisy=False):
         super(CoopModel, self).__init__(id_str, state_enumerator, route_mapper,
                                            parameter_set, noisy)
+
+    def get_parameter_set(self):
+        return self.parameter_set
+
     def get_C_array(self):
         return self.C_array
 

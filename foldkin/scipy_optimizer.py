@@ -11,14 +11,15 @@ class ScipyOptimizer(base.parameter_optimizer.ParameterOptimizer):
         self.epsilon = epsilon
         self.maxfun = maxfun
 
-    def optimize_parameters(self, score_fcn, parameter_set):
+    def optimize_parameters(self, score_fcn, parameter_set, noisy=False):
         bounds = parameter_set.get_parameter_bounds()
         parameter_array = parameter_set.as_array_for_scipy_optimizer()
         results = self.optimization_fcn(score_fcn, x0=parameter_array,
                                         bounds=bounds, approx_grad=1,
                                         factr=self.factr, pgtol=self.pgtol,
                                         epsilon=self.epsilon, maxfun=self.maxfun)
-        print results
+        if noisy:
+            print results
         optimal_parameter_array = results[0]
         parameter_set.update_from_array(optimal_parameter_array)
         score = float(results[1])
