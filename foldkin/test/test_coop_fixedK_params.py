@@ -1,7 +1,8 @@
 import nose.tools
 import numpy
 from foldkin.coop.coop_model_parameter_set import FixedK_SS_TER_TempDependenceParameterSet,\
-                                                  FixedK_TER_TempDependenceParameterSet
+                                                  FixedK_TER_TempDependenceParameterSet,\
+                                                  randomize_parameter
 from foldkin.util import change_log10x_to_lnx, convert_T_to_beta,\
                          convert_beta_to_T
 
@@ -109,3 +110,27 @@ def changing_H_ter_automatically_updates_S_ter_to_match_expected_K_ter():
     print ter_error_msg
     print K_ter_error_msg
     print params
+
+@nose.tools.istest
+def parameter_value_is_set_to_random_number_within_range():
+    params = FixedK_TER_TempDependenceParameterSet()
+    params.set_parameter('beta', convert_T_to_beta(300.))
+    log_K_ter = 0.5
+    H_ss = -10.
+    S_ss = 1e-2
+    H_ter = -5.
+    G_f = -20.
+    G_act = 3.0
+    log_k0 = 10.
+    param_array = numpy.array([log_K_ter, H_ss, H_ter, S_ss, G_f, G_act, log_k0])
+    params.update_from_array(param_array)
+    lower_bound = -10.0
+    upper_bound = 0.0
+    for i in xrange(100):
+        params = randomize_parameter(params, 'H_ss', lower_bound, upper_bound)
+        current_H_ss = params.get_parameter('H_ss')
+        condition = (current_H_ss >= lower_bound) and\
+                    (current_H_ss < upper_bound)
+        error_msg = "Expected value between %.2f and %.2f,"\
+                    "got %.2f" % (lower_bound, upper_bound, current_H_ss)
+        nose.tools.ok_(condition, error_msg)
