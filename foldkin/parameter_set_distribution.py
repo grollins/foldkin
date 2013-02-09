@@ -21,10 +21,14 @@ class ParameterSetDistribution(object):
                 break
         return is_equal
 
+    def __iter__(self):
+        for param_name, param_distribution_list in self.distribution.items():
+            yield param_name, param_distribution_list
+
     def add_parameter_set(self, parameter_set, score):
         for param_name, param_value in parameter_set:
             self.distribution[param_name].append(param_value)
-            self.distribution['score'].append(score)
+        self.distribution['score'].append(score)
 
     def single_parameter_distribution_as_array(self, parameter_name):
         return numpy.array(self.distribution[parameter_name])
@@ -38,3 +42,13 @@ class ParameterSetDistribution(object):
         input_stream = open(filename, 'rb')
         self.distribution = cPickle.load(input_stream)
         input_stream.close()
+
+    def get_best_parameter_set(self):
+        best_parameter_dict = {}
+        ind = numpy.argmin(self.distribution['score'])
+        for param_name, param_distribution_list in iter(self):
+            best_parameter = param_distribution_list[ind]
+            best_parameter_dict[param_name] = best_parameter
+        return best_parameter_dict
+
+            
