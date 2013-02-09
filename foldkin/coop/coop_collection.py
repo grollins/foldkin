@@ -53,3 +53,6 @@ class CoopCollection(object):
 
     def get_parameter(self, parameter_name):
         return self.parameter_set.get_parameter(parameter_name)
+
+    def get_parameter_set(self):
+        return self.parameter_set

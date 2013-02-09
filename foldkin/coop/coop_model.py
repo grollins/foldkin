@@ -52,7 +52,8 @@ class CoopModelFactory(ModelFactory):
 
     def kf_factory(self, C):
         N = self.parameter_set.get_parameter('N')
-        log_k1 = self.parameter_set.get_parameter('log_k1')
+        beta = self.parameter_set.get_parameter('beta')
+        log_k1 = self.parameter_set.compute_log_k1_at_beta(beta)
         k1 = 10**log_k1
         def kf_fcn(t):
             S = N - C
@@ -73,9 +74,10 @@ class CoopModelFactory(ModelFactory):
 
     def route_mapper_factory(self):
         N = self.parameter_set.get_parameter('N')
-        log_K_ss = self.parameter_set.get_parameter('log_K_ss')
-        log_K_ter = self.parameter_set.get_parameter('log_K_ter')
-        log_K_f = self.parameter_set.get_parameter('log_K_f')
+        beta = self.parameter_set.get_parameter('beta')
+        log_K_ss = self.parameter_set.compute_log_K_ss_at_beta(beta)
+        log_K_ter = self.parameter_set.compute_log_K_ter_at_beta(beta)
+        log_K_f = self.parameter_set.compute_log_K_f_at_beta(beta)
         K_ss = 10**log_K_ss
         K_ter = 10**log_K_ter
         K_f = 10**log_K_f
@@ -176,10 +178,12 @@ class CoopModel(MarkovStateModel):
         return len(self.routes)
 
     def compute_boltzmann_factors(self):
-        N = self.get_parameter('N')
-        log_K_ss = self.get_parameter('log_K_ss')
-        log_K_ter = self.get_parameter('log_K_ter')
-        log_K_f = self.get_parameter('log_K_f')
+        ps = self.get_parameter_set()
+        N = ps.get_parameter('N')
+        beta = ps.get_parameter('beta')
+        log_K_ss = ps.compute_log_K_ss_at_beta(beta)
+        log_K_ter = ps.compute_log_K_ter_at_beta(beta)
+        log_K_f = ps.compute_log_K_f_at_beta(beta)
         K_ss = 10**log_K_ss
         K_ter = 10**log_K_ter
         K_f = 10**log_K_f

@@ -26,10 +26,11 @@ class CoopFitCurveJudge(Judge):
             ddlogkf_dbeta = fold_rate_predictor.predict_second_deriv(beta,
                                                              parameter_set,
                                                              model_factory)
-            fold_score1 = (log_kf - y0)**2
-            fold_score2 = (dlogkf_dbeta - 0)**2
-            fold_score3 = (0.5 * ddlogkf_dbeta - y2)**2
+            fold_score1 = ((log_kf - y0)**2) / y0**2
+            fold_score2 = (dlogkf_dbeta - 0)**2 / 1.
+            fold_score3 = ((0.5 * ddlogkf_dbeta - y2)**2) / y2**2
             fold_score = numpy.sqrt((fold_score1 + fold_score2 + fold_score3)/3.)
+            # fold_score = numpy.sqrt((fold_score1 + fold_score2)/2.)
             error_msg = "%.2f %.2f %.2f" % (fold_score1, fold_score2, fold_score3)
             assert not numpy.isnan(fold_score), error_msg
         else:

@@ -36,7 +36,9 @@ class FoldRatePredictor(DataPredictor):
         return self.predict_fold_rate(model)
 
     def predict_fold_rate(self, model):
-        log_k1 = model.get_parameter('log_k1')
+        ps = model.get_parameter_set()
+        beta = ps.get_parameter('beta')
+        log_k1 = ps.compute_log_k1_at_beta(beta)
         boltzmann_factor_array = model.compute_boltzmann_factors()
         boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
         boltzmann_factor_array[numpy.isnan(boltzmann_factor_array)] = ALMOST_ZERO
@@ -102,15 +104,6 @@ class FoldRatePredictor(DataPredictor):
         return dlog10kf_dbeta
 
     def predict_second_deriv(self, beta, ps, model_factory):
-        # lower_beta_bound = beta - (beta*0.01)
-        # upper_beta_bound = beta + (beta*0.01)
-        # lower_dlnQd_dbeta = self.compute_lnQd_deriv(lower_beta_bound, ps,
-        #                                              model_factory)
-        # upper_dlnQd_dbeta = self.compute_lnQd_deriv(upper_beta_bound, ps,
-        #                                              model_factory)
-        # dbeta = upper_beta_bound - lower_beta_bound
-        # ddlnQd = upper_dlnQd_dbeta - lower_dlnQd_dbeta
-        # ddlnQd_dbeta = ddlnQd / dbeta
         ddlnQd_ddbeta = compute_ddy_at_x(beta, 'beta', ps, model_factory,
                                          y_fcn=compute_lnQd)
         ddlog10kf_ddbeta = -change_lnx_to_log10x(ddlnQd_ddbeta)
@@ -137,7 +130,10 @@ class UnfoldRatePredictor(DataPredictor):
         return self.predict_unfold_rate(model)
 
     def predict_unfold_rate(self, model):
-        log_k1 = model.get_parameter('log_k1')
+        ps = model.get_parameter_set()
+        beta = ps.get_parameter('beta')
+        ps.get_parameter('beta')
+        log_k1 = ps.compute_log_k1_at_beta(beta)
         boltzmann_factor_array = model.compute_boltzmann_factors()
         boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
         boltzmann_factor_array[numpy.isnan(boltzmann_factor_array)] = ALMOST_ZERO
