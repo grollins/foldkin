@@ -45,8 +45,8 @@ class CoopFitCurveJudge(Judge):
             unfold_prediction = unfold_rate_predictor.predict_data(model)
             log_ku = unfold_prediction.as_array()[0]
             dlogku_dbeta = unfold_rate_predictor.predict_deriv(model)
-            unfold_score1 = (log_kf - y0)**2
-            unfold_score2 = (dlogku_dbeta - y1)**2
+            unfold_score1 = (log_ku - y0)**2 / y0**2
+            unfold_score2 = (dlogku_dbeta - y1)**2 / y1**2
             unfold_score = numpy.sqrt((unfold_score1 + unfold_score2)/2.)
         else:
             unfold_score = 0.0

@@ -37,7 +37,10 @@ class ContactOrderParameterSet(ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         logk0_bounds = self.bounds_dict['logk0']
         gamma_bounds = self.bounds_dict['gamma']
         bounds = [logk0_bounds, gamma_bounds]

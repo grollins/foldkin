@@ -89,12 +89,15 @@ class CoopModelParameterSet(ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         '''N will not be updated'''
-        log_K_ss_bounds = self.bounds_dict['log_K_ss']
-        log_K_ter_bounds = self.bounds_dict['log_K_ter']
-        log_K_f_bounds = self.bounds_dict['log_K_f']
-        log_k0_bounds = self.bounds_dict['log_k0']
+        log_K_ss_bounds = self.get_parameter_bounds('log_K_ss')
+        log_K_ter_bounds = self.get_parameter_bounds('log_K_ter')
+        log_K_f_bounds = self.get_parameter_bounds('log_K_f')
+        log_k0_bounds = self.get_parameter_bounds('log_k0')
         bounds = [log_K_ss_bounds, log_K_ter_bounds, log_K_f_bounds,
                   log_k0_bounds]
         return bounds
@@ -208,7 +211,10 @@ class TemperatureDependenceParameterSet(ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         '''N and beta will not be varied, so no bounds'''
         H_ss_bounds = self.bounds_dict['H_ss']
         H_ter_bounds = self.bounds_dict['H_ter']
@@ -389,7 +395,10 @@ class FixedK_SS_TER_TempDependenceParameterSet(ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         '''N and beta will not be varied, so no bounds'''
         log_K_ss_bounds = self.bounds_dict['log_K_ss']
         log_K_ter_bounds = self.bounds_dict['log_K_ter']
@@ -541,7 +550,10 @@ class FixedK_TER_TempDependenceParameterSet(ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         '''N and beta will not be varied, so no bounds'''
         log_K_ter_bounds = self.bounds_dict['log_K_ter']
         H_ss_bounds = self.bounds_dict['H_ss']

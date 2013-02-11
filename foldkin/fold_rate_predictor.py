@@ -24,11 +24,11 @@ class FoldRatePredictor(DataPredictor):
         error_msg += "unfolded: %.2e\n" % unfolded_weight
         error_msg += "1st excited state: %.2e\n" % first_excited_weight
         error_msg += "%.2e\n" % (first_excited_weight / unfolded_weight)
-        log_k1 = model.get_parameter('log_k1')
-        error_msg += "%.2f\n" % (log_k1)
-        beta = model.get_parameter('beta')
-        error_msg += "%.2f\n" % beta
         ps = model.get_parameter_set()
+        beta = ps.get_parameter('beta')
+        error_msg += "%.2f\n" % beta
+        log_k1 = ps.compute_log_k1_at_beta(beta)
+        error_msg += "%.2f\n" % (log_k1)
         error_msg += "%s\n" % ps.as_array()
         return error_msg
 
@@ -132,7 +132,6 @@ class UnfoldRatePredictor(DataPredictor):
     def predict_unfold_rate(self, model):
         ps = model.get_parameter_set()
         beta = ps.get_parameter('beta')
-        ps.get_parameter('beta')
         log_k1 = ps.compute_log_k1_at_beta(beta)
         boltzmann_factor_array = model.compute_boltzmann_factors()
         boltzmann_factor_array[numpy.isinf(boltzmann_factor_array)] = ALMOST_INF
@@ -148,7 +147,46 @@ class UnfoldRatePredictor(DataPredictor):
         return self.prediction_factory(log_unfold_rate)
 
     def predict_deriv(self, model):
-        return 0.0
+        ps = model.get_parameter_set()
+        N = ps.get_parameter('N')
+        first_excited = N - 1
+        if first_excited < 2:
+            exponent_N1 = 0
+        elif first_excited == 2:
+            exponent_N1 = 1
+        elif first_excited == 3:
+            exponent_N1 = 3
+        elif first_excited == 4:
+            exponent_N1 = 6
+        elif first_excited == 5:
+            exponent_N1 = 10
+        elif first_excited == 6:
+            exponent_N1 = 14
+        elif first_excited > 6:
+            exponent_N1 = 4 * first_excited - 10
+        if N < 2:
+            exponent_N = 0
+        elif N == 2:
+            exponent_N = 1
+        elif N == 3:
+            exponent_N = 3
+        elif N == 4:
+            exponent_N = 6
+        elif N == 5:
+            exponent_N = 10
+        elif N == 6:
+            exponent_N = 14
+        elif N > 6:
+            exponent_N = 4 * N - 10
+
+        H_ss = ps.get_parameter('H_ss')
+        H_ter = ps.get_parameter('H_ter')
+        G_act = ps.get_parameter('G_act')
+        G_f = ps.get_parameter('G_f')
+        dlnku_dbeta = H_ss - (exponent_N1 - exponent_N)*H_ter + G_f - G_act
+        dlog10ku_dbeta = change_lnx_to_log10x(dlnku_dbeta)
+        assert not numpy.isnan(dlog10ku_dbeta)
+        return dlog10ku_dbeta
 
 
 class FoldRateCollectionPredictor(DataPredictor):

@@ -25,5 +25,9 @@ class ParameterSet(object):
         return
 
     @abc.abstractmethod
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return
+
+    @abc.abstractmethod
+    def get_parameter_bounds_list(self):
         return

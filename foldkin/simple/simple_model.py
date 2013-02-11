@@ -85,7 +85,10 @@ class SimpleParameterSet(foldkin.base.parameter_set.ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         return
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         return [ (None, None) ]
 
 

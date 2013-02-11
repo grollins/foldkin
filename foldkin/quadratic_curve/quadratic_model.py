@@ -112,7 +112,10 @@ class QuadFitParameterSet(foldkin.base.parameter_set.ParameterSet):
     def set_parameter_bounds(self, parameter_name, min_value, max_value):
         self.bounds_dict[parameter_name] = (min_value, max_value)
 
-    def get_parameter_bounds(self):
+    def get_parameter_bounds(self, parameter_name):
+        return self.bounds_dict[parameter_name]
+
+    def get_parameter_bounds_list(self):
         y0_bounds = self.bounds_dict['y0']
         y1_bounds = self.bounds_dict['y1']
         y2_bounds = self.bounds_dict['y2']
