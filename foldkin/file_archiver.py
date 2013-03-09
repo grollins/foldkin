@@ -1,5 +1,6 @@
 from base.archiver import Archiver
 import numpy
+import os.path
 
 class FileArchiver(Archiver):
     """docstring for FileArchiver"""
@@ -57,7 +58,9 @@ class TemperatureDependenceFileArchiver(Archiver):
             error_msg = "%s %s" % (len(prediction_array), len(target_df))
             assert len(prediction_array) == len(target_df), error_msg
             target_df['prediction'] = prediction_array
-            fold_filename = "fold_%s" % filename
+            basename = os.path.basename(filename)
+            dirname = os.path.dirname(filename)
+            fold_filename = os.path.join(dirname, "fold_%s" % basename)
             target_df.to_csv(fold_filename)
             print "Wrote", fold_filename
         else:
@@ -69,7 +72,9 @@ class TemperatureDependenceFileArchiver(Archiver):
             error_msg = "%s %s" % (len(prediction_array), len(target_df))
             assert len(prediction_array) == len(target_df), error_msg
             target_df['prediction'] = prediction_array
-            unfold_filename = "unfold_%s" % filename
+            basename = os.path.basename(filename)
+            dirname = os.path.dirname(filename)
+            unfold_filename = os.path.join(dirname, "unfold_%s" % basename)
             target_df.to_csv(unfold_filename)
             print "Wrote", unfold_filename
         else:
