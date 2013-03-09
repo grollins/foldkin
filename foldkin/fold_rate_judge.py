@@ -44,7 +44,8 @@ class CoopCollectionJudge(Judge):
 
         error_msg = "%s  %s" % (target_array.shape, prediction_array.shape)
         assert target_array.shape == prediction_array.shape, error_msg
-        return mean_squared_error(target_array, prediction_array), prediction
+        mse = mean_squared_error(target_array, prediction_array)
+        return mse, prediction
 
 
 class TemperatureDependenceJudge(Judge):

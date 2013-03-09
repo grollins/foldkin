@@ -57,25 +57,6 @@ class FoldRatePredictor(DataPredictor):
         dlnQd_dbeta = compute_dy_at_x(beta, 'beta', ps, model_factory,
                                       y_fcn=compute_lnQd)
         return dlnQd_dbeta
-        # lower_beta_bound = beta - (beta*0.01)
-        # upper_beta_bound = beta + (beta*0.01)
-        # 
-        # ps.set_parameter('beta', lower_beta_bound)
-        # lower_m = model_factory.create_model('', ps)
-        # lower_Qd = lower_m.compute_Qd()
-        # lower_lnQd = numpy.log(lower_Qd)
-        # 
-        # ps.set_parameter('beta', upper_beta_bound)
-        # upper_m = model_factory.create_model('', ps)
-        # upper_Qd = upper_m.compute_Qd()
-        # upper_lnQd = numpy.log(upper_Qd)
-        # 
-        # dbeta = upper_beta_bound - lower_beta_bound
-        # dlnQd = upper_lnQd - lower_lnQd
-        # dlnQd_dbeta = dlnQd / dbeta
-        # error_msg = "%.2f  %.2f" % (dlnQd, dbeta)
-        # assert not numpy.isnan(dlnQd_dbeta), error_msg
-        # return dlnQd_dbeta
 
     def predict_deriv(self, beta, ps, model_factory):
         dlnQd_dbeta = self.compute_lnQd_deriv(beta, ps, model_factory)

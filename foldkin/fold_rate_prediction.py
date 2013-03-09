@@ -7,6 +7,9 @@ class FoldRatePrediction(Prediction):
         super(FoldRatePrediction, self).__init__()
         self.log_fold_rate = log_fold_rate
 
+    def __str__(self):
+        return "%.3f" % self.log_fold_rate
+
     def as_array(self):
         return numpy.array([self.log_fold_rate])
 
@@ -25,6 +28,12 @@ class FoldRateCollectionPrediction(Prediction):
     def __iter__(self):
         for id_str, log_fold_rate in zip(self.id_list, self.log_fold_rate_list):
             yield id_str, log_fold_rate
+
+    def __str__(self):
+        output_str = ""
+        for id_str, log_fold_rate in self:
+            output_str += "%s %.3f\n" % (id_str, log_fold_rate)
+        return output_str
 
     def as_array(self):
         return numpy.array(self.log_fold_rate_list)
