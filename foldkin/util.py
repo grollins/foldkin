@@ -60,3 +60,14 @@ def compute_ddy_at_x(x_value, x_label, parameter_set, model_factory, y_fcn):
 
 def make_copy(copy_me):
     return deepcopy(copy_me)
+
+def make_score_fcn(model_factory, parameter_set, judge, data_predictor,
+                   target_data):
+    def f(current_parameter_array):
+        parameter_set.update_from_array(current_parameter_array)
+        current_model = model_factory.create_model(parameter_set)
+        score, prediction = judge.judge_prediction(
+                                current_model, data_predictor, target_data,
+                                noisy=False)
+        return score
+    return f
