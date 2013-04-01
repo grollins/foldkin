@@ -1,5 +1,6 @@
 from foldkin.scipy_optimizer import ScipyOptimizer
 import foldkin.one_param_curve.curve_fit_one_feature_model as curve
+from foldkin.util import make_score_fcn
 import nose.tools
 from types import FloatType
 
@@ -7,17 +8,6 @@ EPSILON = 1e-3
 
 @nose.tools.istest
 class TestCurveFitOneFeatureFit(object):
-    def make_score_fcn(self, model_factory, parameter_set,
-                       judge, data_predictor, target_data):
-        def f(current_parameter_array):
-            parameter_set.update_from_array(current_parameter_array)
-            current_model = model_factory.create_model(parameter_set)
-            score, prediction = judge.judge_prediction(current_model,
-                                                       data_predictor,
-                                                       target_data)
-            return score
-        return f
-
     @nose.tools.istest
     def return_correct_score_and_optimal_parameter_value(self):
         '''This example fits a linear model to y=2x+5.
@@ -34,8 +24,8 @@ class TestCurveFitOneFeatureFit(object):
         target_data.load_data()
         id_list = target_data.get_id_list()
         model_factory = curve.CurveFitOneFeatureModelFactory(id_list)
-        score_fcn = self.make_score_fcn(model_factory, initial_parameters,
-                                        judge, data_predictor, target_data)
+        score_fcn = make_score_fcn(model_factory, initial_parameters,
+                                   judge, data_predictor, target_data)
         optimizer = ScipyOptimizer()
         results = optimizer.optimize_parameters(score_fcn, initial_parameters)
         new_params, score, num_iterations = results

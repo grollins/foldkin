@@ -66,6 +66,9 @@ class FoldRateCollectionTargetData(TargetData):
         for i in xrange(len(self.feature)):
             yield (self.feature[i], self.exp_rates[i])
 
+    def __str__(self):
+        return str(self.to_data_frame())
+
     def iter_feature(self):
         for feature, exp_rate in self:
             yield feature, exp_rate
@@ -90,7 +93,7 @@ class FoldRateCollectionTargetData(TargetData):
             pass
         else:
             print "Unrecognized data feature:", feature
-            return
+            raise ValueError
         data_file = os.path.expanduser("~/Dropbox/python/kinetic_db/simple_table.txt")
         data_table = pandas.read_csv(data_file, index_col=7, header=0)
         self.feature = numpy.array(data_table[feature], numpy.float32)

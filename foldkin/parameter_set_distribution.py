@@ -45,6 +45,10 @@ class ParameterSetDistribution(object):
         for row_index, row_series in self.data_frame.iterrows():
             yield row_index, row_series
 
+    def __eq__(self, other_psd):
+        return numpy.allclose(
+                self.data_frame.values, other_psd.data_frame.values)
+
     def single_parameter_distribution_as_array(self, parameter_name):
         return numpy.array(self.data_frame[parameter_name])
 

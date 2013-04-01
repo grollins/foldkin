@@ -4,24 +4,14 @@ import foldkin.one_param_curve.curve_fit_one_feature_model as curve
 from foldkin.fold_rate_target_data import FoldRateCollectionTargetData
 from foldkin.file_archiver import FileArchiver
 from foldkin.bootstrap_selector import BootstrapSelector
-from foldkin.parameter_set_distribution import ParameterSetDistribution
+from foldkin.parameter_set_distribution import ParamSetDistFactory,\
+                                               ParameterSetDistribution
+from foldkin.util import make_score_fcn
 
 EPSILON = 0.1
 
 @nose.tools.istest
 class TestFitCurveToCollectionOfFoldRates(object):
-    def make_score_fcn(self, model_factory, parameter_set,
-                       judge, data_predictor, target_data):
-        def f(current_parameter_array):
-            parameter_set.update_from_array(current_parameter_array)
-            current_model = model_factory.create_model(parameter_set)
-            score, prediction = judge.judge_prediction(current_model,
-                                                       data_predictor,
-                                                       target_data,
-                                                       noisy=False)
-            return score
-        return f
-
     @nose.tools.istest
     def rates_are_predicted(self):
         '''This example fits a collection of folding rates
@@ -42,22 +32,23 @@ class TestFitCurveToCollectionOfFoldRates(object):
         model_factory = curve.CurveFitOneFeatureModelFactory(pdb_id_list)
         bs_selector = BootstrapSelector()
         optimizer = ScipyOptimizer()
-        param_dist = ParameterSetDistribution()
+        psd_factory = ParamSetDistFactory()
 
         # bootstrapped data
         for i in xrange(10):
             resampled_target_data = bs_selector.select_data(target_data)
-            score_fcn = self.make_score_fcn(model_factory, initial_parameters,
-                                            judge, data_predictor,
-                                            resampled_target_data)
+            score_fcn = make_score_fcn(
+                            model_factory, initial_parameters,
+                            judge, data_predictor, resampled_target_data)
             results = optimizer.optimize_parameters(score_fcn,
                                                     initial_parameters)
             new_params, score, num_iterations = results
-            param_dist.add_parameter_set(new_params, score)
+            psd_factory.add_parameter_set(new_params)
+            psd_factory.add_parameter('score', score)
 
         # all data
-        score_fcn = self.make_score_fcn(model_factory, initial_parameters,
-                                        judge, data_predictor, target_data)
+        score_fcn = make_score_fcn(model_factory, initial_parameters,
+                                   judge, data_predictor, target_data)
         results = optimizer.optimize_parameters(score_fcn, initial_parameters)
         new_params, score, num_iterations = results
 
@@ -70,8 +61,12 @@ class TestFitCurveToCollectionOfFoldRates(object):
         archiver.save_results(target_data, prediction,
                               "test_fit_curve_results.txt")
 
+        param_dist = psd_factory.make_psd()
         param_dist.save_to_file("parameter_distribution_from_curve_fit.pkl")
         reloaded_param_dist = ParameterSetDistribution()
-        reloaded_param_dist.load_from_file("parameter_distribution_from_curve_fit.pkl")
+        reloaded_param_dist.load_from_file(
+                                "parameter_distribution_from_curve_fit.pkl")
+        print param_dist
+        print reloaded_param_dist
         nose.tools.eq_(param_dist, reloaded_param_dist,
                        "Reloaded parameter distribution doesn't match.")

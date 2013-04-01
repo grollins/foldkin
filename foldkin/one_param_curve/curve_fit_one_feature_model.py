@@ -141,14 +141,16 @@ class CurveFitOneFeatureJudge(foldkin.base.judge.Judge):
     def __init__(self):
         super(CurveFitOneFeatureJudge, self).__init__()
 
-    def judge_prediction(self, model, data_predictor, target_data, noisy=False):
+    def judge_prediction(self, model, data_predictor, target_data,
+                         noisy=False):
         feature_array = target_data.get_feature()
         target_array = target_data.get_target()
         prediction = data_predictor.predict_data(model, feature_array)
         prediction_array = prediction.as_array()
 
+        score = mean_squared_error(target_array, prediction_array)
         if noisy:
+            print score
             for i,p in enumerate(prediction):
                 print p, prediction_array[i], target_array[i]
-
         return mean_squared_error(target_array, prediction_array), prediction
