@@ -1,10 +1,9 @@
 import nose.tools
 import numpy
 from foldkin.coop.coop_model_parameter_set import FixedK_SS_TER_TempDependenceParameterSet,\
-                                                  FixedK_TER_TempDependenceParameterSet,\
-                                                  randomize_parameter
+                                                  FixedK_TER_TempDependenceParameterSet
 from foldkin.util import change_log10x_to_lnx, convert_T_to_beta,\
-                         convert_beta_to_T
+                         convert_beta_to_T, randomize_parameter
 
 EPSILON = 1e-6
 

@@ -1,14 +1,7 @@
 import numpy
-import random
 from foldkin.base.parameter_set import ParameterSet
 from foldkin.util import convert_beta_to_T, convert_T_to_beta,\
                          change_log10x_to_lnx, change_lnx_to_log10x
-
-def randomize_parameter(parameter_set, parameter_name, lower_bound,
-                        upper_bound):
-    new_value = random.uniform(lower_bound, upper_bound)
-    parameter_set.set_parameter(parameter_name, new_value)
-    return parameter_set
 
 class CoopModelParameterSet(ParameterSet):
     """docstring for CoopModelParameterSet"""

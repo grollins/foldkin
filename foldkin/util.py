@@ -1,3 +1,4 @@
+import random
 import numpy
 import scipy.misc
 from copy import deepcopy
@@ -62,12 +63,18 @@ def make_copy(copy_me):
     return deepcopy(copy_me)
 
 def make_score_fcn(model_factory, parameter_set, judge, data_predictor,
-                   target_data):
+                   target_data, noisy=False):
     def f(current_parameter_array):
         parameter_set.update_from_array(current_parameter_array)
         current_model = model_factory.create_model(parameter_set)
         score, prediction = judge.judge_prediction(
                                 current_model, data_predictor, target_data,
-                                noisy=False)
+                                noisy=noisy)
         return score
     return f
+
+def randomize_parameter(parameter_set, parameter_name, lower_bound,
+                        upper_bound):
+    new_value = random.uniform(lower_bound, upper_bound)
+    parameter_set.set_parameter(parameter_name, new_value)
+    return parameter_set
