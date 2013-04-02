@@ -1,8 +1,10 @@
 import numpy
+import pandas
 from foldkin.util import n_choose_k
 from foldkin.base.model_factory import ModelFactory
 from foldkin.markov_state_model import State, Route, MarkovStateModel
 from foldkin.util import ALMOST_INF, ALMOST_ZERO
+from foldkin.probability_vector import ProbabilityVector
 
 def compute_lnQd(coop_model):
     boltzmann_factor_array = coop_model.compute_boltzmann_factors()
@@ -192,3 +194,9 @@ class CoopModel(MarkovStateModel):
             this_bf = this_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
             boltzmann_factor_list.append(this_bf)
         return numpy.array(boltzmann_factor_list)
+
+    def get_init_prob_vec(self):
+        pv = ProbabilityVector()
+        pv.series = pandas.Series(0.0, index=self.state_id_list)
+        pv.set_state_probability(self.state_id_list[self.unfolded_index], 1.0)
+        return pv

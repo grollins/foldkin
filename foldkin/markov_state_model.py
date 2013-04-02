@@ -1,5 +1,6 @@
 import numpy
 import base.model
+from foldkin.rate_matrix import make_rate_matrix_from_state_ids
 
 class State(object):
     def __init__(self, id_str):
@@ -39,6 +40,7 @@ class MarkovStateModel(base.model.Model):
         self.noisy = noisy
         self.parameter_set = parameter_set
 
+        self.state_id_list = []
         for i, s in enumerate(self.states):
             if s.is_folded_state:
                 self.folded_index = i
@@ -46,6 +48,7 @@ class MarkovStateModel(base.model.Model):
                 self.unfolded_index = i
             if s.is_first_excited_state:
                 self.first_excited_index = i
+            self.state_id_list.append(s.id_str)
 
         if self.noisy:
             for s in self.states:
@@ -73,20 +76,18 @@ class MarkovStateModel(base.model.Model):
         Q_0 = boltzmann_factor_array.sum() - boltzmann_factor_array[self.folded_index]
         return Q_0
 
-    def rate_matrix_fcn_factory(self):
-        def compute_rate_matrix(t):
-            rate_matrix = self.build_rate_matrix(self.state_index_dict, 0.)
-            return rate_matrix
-        return compute_rate_matrix
+    def build_rate_matrix(self, time):
+        rate_matrix = self._build_rate_matrix_from_routes(time)
+        return rate_matrix
 
-    def build_rate_matrix(self, state_index_dict, time=0.):
-        N = len(self)
-        rate_matrix = numpy.zeros([N, N])
+    def _build_rate_matrix_from_routes(self, time):
+        rate_matrix = make_rate_matrix_from_state_ids(
+                        index_id_list=self.state_id_list,
+                        column_id_list=self.state_id_list)
         for r in self.routes:
-            start_index = state_index_dict[r.start_state]
-            end_index = state_index_dict[r.end_state]
-            # K[start,end] = k(start-->end)
-            rate_matrix[start_index,end_index] = r.rate_function(time)
-        for i in range(N):
-            rate_matrix[i,i] = -numpy.sum(rate_matrix[i,:])
+            start_id = r.start_state
+            end_id = r.end_state
+            this_rate = r.rate_function(time)
+            rate_matrix.set_rate(start_id, end_id, this_rate)
+        rate_matrix.balance_transition_rates()
         return rate_matrix
