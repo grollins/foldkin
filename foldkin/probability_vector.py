@@ -43,11 +43,13 @@ class ProbabilityVector(object):
     def as_npy_array(self):
         return numpy.array(self.series)
 
+
 class VectorTrajectory(object):
     """docstring for VectorTrajectory"""
     def __init__(self, state_id_list):
         super(VectorTrajectory, self).__init__()
         self.state_id_list = state_id_list
+        self.time_list = []
         self.vec_list = []
     def __len__(self):
         return len(self.vec_list)
@@ -58,9 +60,10 @@ class VectorTrajectory(object):
             full_str += "\n"
         return full_str
     def __iter__(self):
-        for v in iter(self.vec_list):
-            yield v
-    def add_vector(self, vec):
+        for t,v in zip(self.time_list, self.vec_list):
+            yield t,v
+    def add_vector(self, time, vec):
+        self.time_list.append(time)
         vec_template = make_prob_vec_from_state_ids(self.state_id_list)
         combined_vec_series = vec.combine_first(vec_template)
         combined_vec = make_prob_vec_from_panda_series(combined_vec_series)

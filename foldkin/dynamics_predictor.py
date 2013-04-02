@@ -35,17 +35,17 @@ class DynamicFoldRatePredictor(DataPredictor):
         folded_state_at_equilibrium = boltzmann_factor_array[model.folded_index]
         folded_state_at_equilibrium /= boltzmann_factor_array.sum()
         midpt = folded_state_at_equilibrium / 2.
-        min_ind = -1
-        for ind, vec in enumerate(broad_vector_trajectory):
+        min_time = -1
+        for t,vec in broad_vector_trajectory:
             this_folded_prob = vec.get_state_probability(folded_state_id)
             delta_prob = this_folded_prob - midpt
             if delta_prob >= 0.0:
-                min_ind = ind
+                min_time = t
                 break
-        if min_ind == -1:
+        if min_time == -1:
             print "Never found the midpoint."
             raise RuntimeError
-        time_at_point_closest_to_midpt = numpy.log10(broad_t_range[min_ind])
+        time_at_point_closest_to_midpt = numpy.log10(min_time)
 
         # ====================================================
         # = 3. Run a more focused trajectory around midpoint =
@@ -62,8 +62,7 @@ class DynamicFoldRatePredictor(DataPredictor):
 
         trajectory_file = 'temp.txt'
         with open(trajectory_file, 'w') as f:
-            for i, v in enumerate(midpt_vector_trajectory):
-                t = time_range_around_midpt[i]
+            for t, v in midpt_vector_trajectory:
                 fold_prob = v.get_state_probability(folded_state_id)
                 f.write("%.2e  %.2e\n" % (t, fold_prob))
 
@@ -96,7 +95,7 @@ class DynamicFoldRatePredictor(DataPredictor):
             prob_vec_at_time_t = vector_matrix_product(
                                     init_prob_vec, eQt,
                                     do_alignment=True)
-            vec_traj.add_vector(prob_vec_at_time_t)
+            vec_traj.add_vector(t, prob_vec_at_time_t)
         return vec_traj
 
     def ratespec_fit(self, traj_file, plot_name, min_log_rate=-7,
