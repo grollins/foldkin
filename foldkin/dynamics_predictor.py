@@ -17,35 +17,15 @@ class DynamicFoldRatePredictor(DataPredictor):
         self.make_plots = make_plots
         self.noisy = noisy
 
-    def predict_data(self, model, feature=None):
-        return self.predict_fold_rate_from_dynamics(model)
+    def predict_data(self, model, filename_prefix="my"):
+        return self.predict_fold_rate_from_dynamics(model, filename_prefix)
 
-    def predict_fold_rate_from_dynamics(self, model):
-        # =====================================================
-        # = 0. Get rate matrix and initial probability vector =
-        # =====================================================
-        init_prob_vec = model.get_init_prob_vec()
-        Q = model.build_rate_matrix(0.0)
-
-        if self.noisy:
-            print init_prob_vec
-            print Q
-
+    def predict_fold_rate_from_dynamics(self, model, filename_prefix):
         # ====================================================
         # = 1. Run a coarse trajectory over a wide range     =
         # ====================================================
         broad_t_range = 10**numpy.arange(-15, 15, 1.0)
-        broad_vector_trajectory = VectorTrajectory(model.state_id_list)
-        for i,t in enumerate(broad_t_range):
-            try:
-                eQt = self.expm.compute_matrix_exp(Q, t)
-            except ValueError:
-                print "eQt not finite at %d, %.2e" % (i, t)
-                break
-            prob_vec_at_time_t = vector_matrix_product(
-                                    init_prob_vec, eQt,
-                                    do_alignment=True)
-            broad_vector_trajectory.add_vector(prob_vec_at_time_t)
+        broad_vector_trajectory = self.compute_trajectory(model, broad_t_range)
 
         # ========================
         # = 2. find the midpoint =
@@ -73,13 +53,8 @@ class DynamicFoldRatePredictor(DataPredictor):
         min_time = time_at_point_closest_to_midpt - 3
         max_time = time_at_point_closest_to_midpt + 3
         time_range_around_midpt = 10**numpy.arange(min_time, max_time, 0.1)
-        midpt_vector_trajectory = VectorTrajectory(model.state_id_list)
-        for i,t in enumerate(time_range_around_midpt):
-            eQt = self.expm.compute_matrix_exp(Q, t)
-            prob_vec_at_time_t = vector_matrix_product(
-                                    init_prob_vec, eQt,
-                                    do_alignment=True)
-            midpt_vector_trajectory.add_vector(prob_vec_at_time_t)
+        midpt_vector_trajectory = self.compute_trajectory(
+                                    model, time_range_around_midpt)
         max_time = time_range_around_midpt.max()
         min_time = time_range_around_midpt.min()
         max_log_rate = numpy.log10(1./min_time)
@@ -97,11 +72,32 @@ class DynamicFoldRatePredictor(DataPredictor):
         # ================================================
         log10_kf = self.ratespec_fit(
                     trajectory_file,
-                    plot_name='%s_ratespec' % "my",
+                    plot_name='%s_ratespec' % filename_prefix,
                     min_log_rate=min_log_rate, max_log_rate=max_log_rate)
         prediction = self.prediction_factory(log10_kf)
         prediction.trajectory = midpt_vector_trajectory
         return prediction
+
+    def compute_trajectory(self, model, time_array):
+        init_prob_vec = model.get_init_prob_vec()
+        Q = model.build_rate_matrix(0.0)
+
+        if self.noisy:
+            print init_prob_vec
+            print Q
+
+        vec_traj = VectorTrajectory(model.state_id_list)
+        for i,t in enumerate(time_array):
+            try:
+                eQt = self.expm.compute_matrix_exp(Q, t)
+            except ValueError:
+                print "eQt not finite at %d, %.2e" % (i, t)
+                break
+            prob_vec_at_time_t = vector_matrix_product(
+                                    init_prob_vec, eQt,
+                                    do_alignment=True)
+            vec_traj.add_vector(prob_vec_at_time_t)
+        return vec_traj
 
     def ratespec_fit(self, traj_file, plot_name, min_log_rate=-7,
                      max_log_rate=7):
