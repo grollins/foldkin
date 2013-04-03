@@ -22,7 +22,7 @@ class CoopModelFactory(ModelFactory):
     def __init__(self):
         super(CoopModelFactory, self).__init__()
 
-    def create_model(self, id_str, parameter_set):
+    def create_model(self, parameter_set, id_str=''):
         self.parameter_set = parameter_set
         state_enumerator = self.state_enumerator_factory()
         route_mapper = self.route_mapper_factory()
@@ -134,14 +134,7 @@ class CoopState(State):
         return "%s %d %s %s %s" % (self.id_str, self.C, self.is_folded_state,
                                    self.is_unfolded_state, self.is_first_excited_state)
 
-    def compute_boltz_weight(self, N, K_ss, K_ter, K_f):
-        if self.is_unfolded_state:
-            this_bf = n_choose_k(N, self.C) * K_ss**self.C
-        elif self.is_folded_state:
-            this_bf = n_choose_k(N, self.C) * K_ss**self.C * K_f
-        else:
-            this_bf = n_choose_k(N, self.C) * K_ss**self.C
-
+    def _get_ter_exponent(self):
         if self.C < 2:
             exponent = 0
         elif self.C == 2:
@@ -156,10 +149,24 @@ class CoopState(State):
             exponent = 14
         elif self.C > 6:
             exponent = 4 * self.C - 10
+        return exponent
 
-        this_K_ter = K_ter ** exponent
-        this_bf *= this_K_ter
-        return this_bf
+    def compute_boltz_components(self, N, K_ss, K_ter, K_f):
+        multiplicity = n_choose_k(N, self.C)
+        ss_factor = K_ss ** self.C
+        exponent = self._get_ter_exponent()
+        ter_factor = K_ter ** exponent
+        if self.is_folded_state:
+            folded_factor = K_f
+        else:
+            folded_factor = 1.0
+        return multiplicity, ss_factor, ter_factor, folded_factor
+
+    def compute_boltz_weight(self, N, K_ss, K_ter, K_f):
+        components = self.compute_boltz_components(N, K_ss, K_ter, K_f)
+        multiplicity, ss_factor, ter_factor, folded_factor = components
+        bf = multiplicity * ss_factor * ter_factor * folded_factor
+        return bf
 
 class CoopModel(MarkovStateModel):
     def __init__(self, id_str, state_enumerator, route_mapper, parameter_set,
@@ -194,6 +201,46 @@ class CoopModel(MarkovStateModel):
             this_bf = this_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
             boltzmann_factor_list.append(this_bf)
         return numpy.array(boltzmann_factor_list)
+
+    def compute_boltzmann_components(self):
+        ps = self.get_parameter_set()
+        N = ps.get_parameter('N')
+        beta = ps.get_parameter('beta')
+        log_K_ss = ps.compute_log_K_ss_at_beta(beta)
+        log_K_ter = ps.compute_log_K_ter_at_beta(beta)
+        log_K_f = ps.compute_log_K_f_at_beta(beta)
+        K_ss = 10**log_K_ss
+        K_ter = 10**log_K_ter
+        K_f = 10**log_K_f
+        multiplicity_list = []
+        ss_list = []
+        ter_list = []
+        folded_list = []
+        boltzmann_factor_list = []
+        for this_state in self.states:
+            components = this_state.compute_boltz_components(
+                                        N, K_ss, K_ter, K_f)
+            multiplicity, ss_factor, ter_factor, folded_factor = components
+            multiplicity_list.append( multiplicity )
+            ss_list.append( ss_factor )
+            ter_list.append( ter_factor )
+            folded_list.append( folded_factor )
+            this_bf = this_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
+            boltzmann_factor_list.append(this_bf)
+        
+        multiplicity_array = numpy.array(multiplicity_list)
+        ss_array = numpy.array(ss_list)
+        ter_array = numpy.array(ter_list)
+        folded_array = numpy.array(folded_list)
+        boltzmann_factor_array = numpy.array(boltzmann_factor_list)
+        component_dict = {}
+        component_dict['multiplicity'] = numpy.log10(multiplicity_array)
+        component_dict['ss'] = numpy.log10(ss_array)
+        component_dict['ter'] = numpy.log10(ter_array)
+        component_dict['folded'] = numpy.log10(folded_array)
+        component_dict['total_bf'] = numpy.log10(boltzmann_factor_array)
+        df = pandas.DataFrame(component_dict, index=self.state_id_list)
+        return df
 
     def get_init_prob_vec(self):
         pv = ProbabilityVector()

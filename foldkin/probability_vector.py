@@ -55,9 +55,8 @@ class VectorTrajectory(object):
         return len(self.vec_list)
     def __str__(self):
         full_str = ""
-        for v in iter(self):
-            full_str += str(v)
-            full_str += "\n"
+        for t,v in iter(self):
+            full_str += "%.2e\n%s\n" % (t,str(v))
         return full_str
     def __iter__(self):
         for t,v in zip(self.time_list, self.vec_list):
@@ -68,3 +67,10 @@ class VectorTrajectory(object):
         combined_vec_series = vec.combine_first(vec_template)
         combined_vec = make_prob_vec_from_panda_series(combined_vec_series)
         self.vec_list.append(combined_vec)
+    def convert_to_df(self):
+        vec_dict_list = []
+        for t,v in self:
+            vec_dict_list.append( v.series.to_dict() )
+        df = pandas.DataFrame(vec_dict_list)
+        df['time'] = pandas.Series(self.time_list)
+        return df
