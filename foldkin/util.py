@@ -9,8 +9,9 @@ ALMOST_INF = 1e300
 boltz_k = 0.002 # kcal/mol/Kelvin
 
 def n_choose_k(n,k):
-    assert n > 0, "%d %d" % (n, k)
-    return scipy.misc.comb(n, k)
+    error_msg = "n must be larger than zero in n_choose_k.\nn=%d, k=%d" % (n, k)
+    assert n > 0, error_msg
+    return int( round(scipy.misc.comb(n, k)) )
 
 def convert_beta_to_T(beta):
     T = 1./(beta * boltz_k)
@@ -70,6 +71,28 @@ def make_score_fcn(model_factory, parameter_set, judge, data_predictor,
         score, prediction = judge.judge_prediction(
                                 current_model, data_predictor, target_data,
                                 noisy=noisy)
+        return score
+    return f
+
+def make_arrhenius_score_fcn(
+        fold_model_factory, unfold_model_factory, parameter_set, judge,
+        fold_data_predictor, unfold_data_predictor,
+        fold_target_data, unfold_target_data, noisy=False):
+    def f(current_parameter_array):
+        parameter_set.update_from_array(current_parameter_array)
+        current_fold_model = fold_model_factory.create_model(parameter_set)
+        if unfold_model_factory:
+            current_unfold_model = unfold_model_factory.create_model(
+                                                            parameter_set)
+        else:
+            current_unfold_model = None
+        results = judge.judge_prediction(
+                    current_fold_model, current_unfold_model,
+                    fold_data_predictor, unfold_data_predictor,
+                    fold_target_data, unfold_target_data, noisy=False)
+        score, fold_prediction, unfold_prediction = results
+        if noisy:
+            print score
         return score
     return f
 
