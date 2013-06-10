@@ -142,8 +142,12 @@ class TemperatureDependenceTargetData(TargetData):
     def __len__(self):
         return len(self.feature)
 
-    def load_data(self, protein_name, folding_or_unfolding_data):
-        from kinetic_db.arrhenius import arrhenius_dict
+    def load_data(self, protein_name, folding_or_unfolding_data,
+                  arrhenius_dict=None):
+        if arrhenius_dict:
+            pass
+        else:
+            from kinetic_db.arrhenius import arrhenius_dict
         self.name = protein_name
         arrhenius_data = arrhenius_dict[self.name]
         fold_data_file, unfold_data_file, N, avg_ss_length = arrhenius_data
@@ -186,10 +190,18 @@ class TemperatureDependenceTargetData(TargetData):
     def get_max_target(self):
         return numpy.max(self.exp_rates)
 
+    def get_median_target(self):
+        median_value = numpy.median(self.exp_rates)
+        delta = numpy.abs(self.exp_rates - median_value)
+        ind = numpy.argmin(delta)
+        beta = self.feature[ind]
+        return beta, median_value
+
     def make_copy_from_selection(self, inds):
         my_clone = deepcopy(self)
         my_clone.feature = my_clone.feature[inds]
         my_clone.exp_rates = my_clone.exp_rates[inds]
+        my_clone.data_table = my_clone.data_table.ix[inds]
         return my_clone
 
     def to_data_frame(self):
