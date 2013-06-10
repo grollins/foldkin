@@ -79,13 +79,6 @@ class ParameterSetDistribution(object):
 
     def get_best_parameter_set(self):
         ind = numpy.argmin(self.data_frame['score'])
-        if type(self.data_frame) is defaultdict:
-            best_parameter_dict = {}
-            for param_name in self.data_frame.keys():
-                param_value = self.data_frame[param_name][ind]
-                best_parameter_dict[param_name] = param_value
-        else:
-            best_param_series = self.data_frame.irow(ind)
-            best_parameter_dict = best_param_series.to_dict()
-        return best_parameter_dict
+        best_param_series = self.data_frame.irow(ind)
+        return ind, best_param_series
 
