@@ -13,7 +13,7 @@ def PredictsFoldRateFromEnsembleDynamics():
     params.set_parameter('log_k0', 5.6)
     params.set_parameter('N', 2)
     model_factory = CoopModelFactory()
-    model = model_factory.create_model('', params)
+    model = model_factory.create_model(params)
     data_predictor = DynamicFoldRatePredictor(make_plots=True)
     prediction = data_predictor.predict_data(model)
     print prediction
