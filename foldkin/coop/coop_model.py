@@ -16,7 +16,6 @@ def compute_lnQd(coop_model):
     Qd = boltzmann_factor_array[inds].sum()
     return numpy.log(Qd)
 
-
 class CoopModelFactory(ModelFactory):
     """docstring for CoopModelFactory"""
     def __init__(self):
@@ -109,7 +108,7 @@ class CoopModelFactory(ModelFactory):
                         # folding route
                         kf = self.kf_factory(u_state.C)
                         fold_route = Route(u_state.id, f_state.id,
-                                                        kf, direction="folding")
+                                           kf, direction="folding")
                         route_list.append(fold_route)
                         # unfolding route
                         f_bf = f_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
@@ -227,18 +226,24 @@ class CoopModel(MarkovStateModel):
             folded_list.append( folded_factor )
             this_bf = this_state.compute_boltz_weight(N, K_ss, K_ter, K_f)
             boltzmann_factor_list.append(this_bf)
-        
         multiplicity_array = numpy.array(multiplicity_list)
         ss_array = numpy.array(ss_list)
         ter_array = numpy.array(ter_list)
         folded_array = numpy.array(folded_list)
         boltzmann_factor_array = numpy.array(boltzmann_factor_list)
+        Q = boltzmann_factor_array.sum()
         component_dict = {}
-        component_dict['multiplicity'] = numpy.log10(multiplicity_array)
-        component_dict['ss'] = numpy.log10(ss_array)
-        component_dict['ter'] = numpy.log10(ter_array)
-        component_dict['folded'] = numpy.log10(folded_array)
-        component_dict['total_bf'] = numpy.log10(boltzmann_factor_array)
+        component_dict['multiplicity'] = numpy.log(multiplicity_array)
+        component_dict['ss'] = numpy.log(ss_array)
+        component_dict['ter'] = numpy.log(ter_array)
+        component_dict['folded'] = numpy.log(folded_array)
+        component_dict['total_bf'] = numpy.log(boltzmann_factor_array)
+        component_dict['Q'] = numpy.log(Q)
+        component_dict['G'] = component_dict['Q']\
+                                - component_dict['multiplicity']\
+                                - component_dict['ss']\
+                                - component_dict['ter']\
+                                - component_dict['folded']
         df = pandas.DataFrame(component_dict, index=self.state_id_list)
         return df
 
