@@ -21,10 +21,10 @@ class CoopCollectionFactory(ModelFactory):
         new_collection = CoopCollection(parameter_set)
         for this_id, this_param_value in zip(self.id_list, self.parameter_values):
             parameter_set_clone = clone(parameter_set)
-            parameter_set_clone.set_parameter(self.parameter_name,
-                                              this_param_value)
-            this_model = self.element_model_factory.create_model(this_id,
-                                                            parameter_set_clone)
+            parameter_set_clone.set_parameter(
+                                self.parameter_name, this_param_value)
+            this_model = self.element_model_factory.create_model(
+                                parameter_set_clone, this_id)
             new_collection.add_element(this_model)
         return new_collection
 
