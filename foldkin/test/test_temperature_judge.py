@@ -1,7 +1,7 @@
 import nose.tools
 import numpy
 from foldkin.coop.coop_model import CoopModelFactory
-from foldkin.coop.coop_model_parameter_set import FixedK_TER_TempDependenceParameterSet
+from foldkin.coop.coop_model_parameter_set import FixedK_SS_TER_TempDependenceParameterSet
 from foldkin.fold_rate_predictor import FoldRatePredictor, UnfoldRatePredictor
 from foldkin.scipy_optimizer import ScipyOptimizer
 from foldkin.file_archiver import TemperatureDependenceFileArchiver
@@ -16,7 +16,7 @@ class TestFitOneTemperatureDependence(object):
                        quad_fit_to_ku_params):
         def f(current_parameter_array):
             parameter_set.update_from_array(current_parameter_array)
-            current_model = model_factory.create_model('', parameter_set)
+            current_model = model_factory.create_model(parameter_set)
             score = judge.judge_prediction(current_model, model_factory,
                                            fold_rate_predictor,
                                            unfold_rate_predictor,
@@ -43,7 +43,7 @@ class TestFitOneTemperatureDependence(object):
         # quad_fit_to_ku_params.set_parameter('y2', 0.0)
 
         model_factory = CoopModelFactory()
-        coop_parameters = FixedK_TER_TempDependenceParameterSet()
+        coop_parameters = FixedK_SS_TER_TempDependenceParameterSet()
         coop_parameters.set_parameter('N', 6)
         coop_parameters.set_parameter('H_ss', -6.2)
         coop_parameters.set_parameter('S_ss', 0.003)

@@ -32,11 +32,11 @@ def compute_dy_at_x(x_value, x_label, parameter_set, model_factory, y_fcn):
     upper_x_bound = x_value + (x_value*0.01)
 
     parameter_set.set_parameter(x_label, lower_x_bound)
-    lower_model = model_factory.create_model('', parameter_set)
+    lower_model = model_factory.create_model(parameter_set)
     lower_y = y_fcn(lower_model)
 
     parameter_set.set_parameter(x_label, upper_x_bound)
-    upper_model = model_factory.create_model('', parameter_set)
+    upper_model = model_factory.create_model(parameter_set)
     upper_y = y_fcn(upper_model)
 
     dx = upper_x_bound - lower_x_bound

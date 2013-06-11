@@ -2,7 +2,7 @@ import nose.tools
 import numpy
 from foldkin.coop.coop_model import CoopModelFactory
 from foldkin.coop.coop_collection import CoopCollectionFactory
-from foldkin.coop.coop_model_parameter_set import TemperatureDependenceParameterSet
+from foldkin.coop.coop_model_parameter_set import TempDependenceParameterSet
 from foldkin.fold_rate_predictor import FoldRateCollectionPredictor,\
                                         FoldRatePredictor, UnfoldRatePredictor
 from foldkin.scipy_optimizer import ScipyOptimizer
@@ -18,7 +18,7 @@ def convert_T_to_beta(T):
 def fold_rate_varies_as_a_function_of_temperature():
     model_factory = CoopModelFactory()
     predictor = FoldRatePredictor()
-    params = TemperatureDependenceParameterSet()
+    params = TempDependenceParameterSet()
     params.set_parameter('N', 3)
 
     T_range = numpy.arange(270, 330, 10.)
@@ -26,7 +26,7 @@ def fold_rate_varies_as_a_function_of_temperature():
     for T in T_range:
         this_beta = convert_T_to_beta(T)
         params.set_parameter('beta', this_beta)
-        this_model = model_factory.create_model('', params)
+        this_model = model_factory.create_model(params)
         prediction = predictor.predict_data(this_model)
         logkf = prediction.as_array()[0]
         print T, logkf
@@ -73,7 +73,7 @@ class TestFitOneTemperatureDependence(object):
         unfold_id_list = range(len(unfold_beta_array))
         unfold_model_factory = CoopCollectionFactory(unfold_id_list, 'beta',
                                                      unfold_beta_array)
-        initial_parameters = TemperatureDependenceParameterSet()
+        initial_parameters = TempDependenceParameterSet()
         initial_parameters.set_parameter('N', 3)
         initial_parameters.set_parameter_bounds('log_k0', 4.0, 7.0)
         judge = TemperatureDependenceJudge()

@@ -33,7 +33,7 @@ class PS(object):
 class ModelFactory(object):
     def __init__(self):
         pass
-    def create_model(self, id_str, ps):
+    def create_model(self, ps, id_str=''):
         return Model(ps)
 
 class Model(object):
