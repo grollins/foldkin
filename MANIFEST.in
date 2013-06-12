@@ -1,0 +1,16 @@
+include MANIFEST.in
+include *.txt
+# Top-level build script
+include setup.py
+# All source files
+recursive-include foldkin *
+# All data files
+# recursive-include data *
+# All documentation
+recursive-include doc *
+# All scripts
+recursive-include scripts *
+# Exclude what we don't want to include
+prune doc/build
+prune doc/source/generated
+global-exclude *.pyc *~ *.bak *.swp *.pyo
