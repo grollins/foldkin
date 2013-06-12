@@ -168,6 +168,36 @@ class CoopState(State):
         return bf
 
 class CoopModel(MarkovStateModel):
+    """
+    CoopModel is a MarkovStateModel for protein folding. The model consists
+    of folding units (secondary structures) that are either folded or unfolded.
+
+    Parameters
+    ----------
+    id_str : string
+        A descriptor used to distinguish this model from other models.
+    state_enumerator : callable f()
+        Generates a list of states for the model.
+    route_mapper : callable f(state_list)
+        Generates a list of routes for the model.
+    parameter_set : ParameterSet
+    noisy : bool, optional
+        Whether the model should print additional output.
+
+    Attributes
+    ----------
+    states : list
+    routes : list
+    state_id_list : list
+    state_index_dict : dict
+        `state_index_dict[s]` is the integer index to the element of `states` that
+        corresponds to the state with id `s`.
+    folded_index, unfolded_index, first_excited_state : int
+        indices to the elements of `states` that correspond to the folded,
+        unfolded, and first-excited states, respectively.
+    C_array : numpy ndarray
+        An array of integers that span the range from 0 to N, inclusive.
+    """
     def __init__(self, id_str, state_enumerator, route_mapper, parameter_set,
                  noisy=False):
         super(CoopModel, self).__init__(id_str, state_enumerator, route_mapper,
